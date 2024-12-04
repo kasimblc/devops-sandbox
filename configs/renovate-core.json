@@ -1,0 +1,22 @@
+{
+    "dependencyDashboard": false,
+    "masterIssue": true,
+    "branchPrefix": "renovate-",
+    "separateMajorMinor": false,
+    "ignoreDeps": [],
+    "rebaseLabel": "renovate-rebase",
+    "prHourlyLimit": 0,
+    "prConcurrentLimit": 0,   
+    "hostRules": [
+        {
+        "hostType": "nuget",
+        "matchHost": "https://nuget.pkg.github.com"
+        }
+    ],
+    "nuget": {
+        "enabled": false
+    },
+    "npm": {
+        "enabled": false
+    }
+}
