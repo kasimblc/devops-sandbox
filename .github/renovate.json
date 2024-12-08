@@ -1,0 +1,15 @@
+{
+    "extends": ["github>LivasoftConnector/renovate:configs/test/test-renovate-base.json"], 
+    "regexManagers": [
+      {
+        "fileMatch": ["test-control.json"], 
+        "matchStrings": ["\"trigger\":\\s*(true|false)"],
+        "datasource": "npm",
+        "depNameTemplate": "{{dependency}}",
+        "versioning": "semver",
+        "packageNameTemplate": "{{dependency}}",
+        "extractVersion": "{{version}}"
+      }
+    ]
+  }
+  

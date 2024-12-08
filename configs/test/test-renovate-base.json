@@ -1,0 +1,13 @@
+{
+    "extends": ["config:base"],
+    "packageRules": [
+      {
+        "matchPackagePrefixes": ["testpackage"],
+        "groupName": "Test Packages",
+        "schedule": ["* * * * *"], 
+        "enabled": true,
+        "automerge": false
+      }
+    ]
+  }
+  

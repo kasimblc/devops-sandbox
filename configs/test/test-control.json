@@ -1,0 +1,5 @@
+{
+  "trigger": false,
+  "dependency": "testpackage-fake",
+  "version": "1.0.0"
+}
