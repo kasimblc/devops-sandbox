@@ -1,25 +1,22 @@
-# example.py
-def greet(name=None):
-    if name:
-        print(f"Hello, {name}!")
-    else:
-        print("Hello, World!")
+import random
 
-greet("Alice")
-greet()
+def guess_number():
+    number_to_guess = random.randint(1, 100)
+    guess = None
+    attempts = 0
 
-# Yeni eklenen fonksiyonlar
-def farewell(name=None):
-    if name:
-        print(f"Goodbye, {name}!")
-    else:
-        print("Goodbye, World!")
+    print("1 ile 100 arasında bir sayı tuttum. Bakalım tahmin edebilecek misin?")
 
-farewell("Bob")
-farewell()
+    while guess != number_to_guess:
+        guess = int(input("Tahmininizi girin: "))
+        attempts += 1
 
-def add(a, b):
-    return a + b
+        if guess < number_to_guess:
+            print("Daha büyük bir sayı tahmin edin.")
+        elif guess > number_to_guess:
+            print("Daha küçük bir sayı tahmin edin.")
+        else:
+            print(f"Tebrikler! {attempts} denemede doğru tahmini buldunuz.")
 
-print(add(3, 5))
-print(add(10, 20))
+if __name__ == "__main__":
+    guess_number()
