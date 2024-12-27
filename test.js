@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>JavaScript Örneği</title>
-</head>
-<body>
-    <h1>JavaScript Örneği</h1>
-    <button onclick="showMessage()">Mesajı Göster</button>
+// Basit bir JavaScript örneği
 
-    <script>
-        function showMessage() {
-            alert("Merhaba, bu bir JavaScript örneğidir!");
-        }
-    </script>
-</body>
-</html>
+// Bir sayıyı iki katına çıkaran fonksiyon
+function double(number) {
+    return number * 2;
+}
+
+// Konsola bir mesaj yazdırma
+console.log("Merhaba, Dünya!");
+
+// Fonksiyonu test et
+let sayi = 5;
+console.log("Sayının iki katı: " + double(sayi));
