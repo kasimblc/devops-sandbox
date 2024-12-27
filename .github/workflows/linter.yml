@@ -1,46 +1,28 @@
 name: Lint
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  push: null
+  pull_request: null
 
-permissions:
-  contents: read  # Sadece okuma izni
+permissions: {}
 
 jobs:
-  lint:
-    runs-on: ubuntu-24.04  # veya ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Tüm commit geçmişini al
-      - name: Super-Linter
-        uses: super-linter/super-linter@v7.2.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.ALL }}
+  build:
+    name: Lint
+    runs-on: ubuntu-24.04
 
-  fix-lint-issues:
     permissions:
-      contents: write  # Linter sonuçlarını güncellemek için yazma izni
-      statuses: write  # Durum güncellemeleri yapmak için yazma izni
-    runs-on: ubuntu-24.04  # veya ubuntu-24.04
+      contents: read
+      packages: read
+      statuses: write
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Super-Linter
+
+      - name: Super-linter
         uses: super-linter/super-linter@v7.2.1
         env:
           GITHUB_TOKEN: ${{ secrets.ALL }}
-          FIX_SHELL_SHFMT: true  # Shell script biçimlendirme hatalarını düzelt
-          FIX_YAML_PRETTIER: true  # YAML formatlama hatalarını düzelt
-      - name: Commit and push linting fixes
-        if: github.event_name == 'pull_request' && github.ref_name != github.event.repository.default_branch
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
-          commit_message: "chore: fix linting issues"
-          commit_user_name: super-linter
-          commit_user_email: super-linter@super-linter.dev
