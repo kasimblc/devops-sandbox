@@ -15,8 +15,6 @@ def guess_number():
             print("Daha büyük bir sayı tahmin edin.")
         elif guess > number_to_guess:
             print("Daha küçük bir sayı tahmin edin.")
-        else:
-            print(f"Tebrikler! {attempts} denemede doğru tahmini buldunuz.")
 
 if __name__ == "__main__":
     guess_number()
