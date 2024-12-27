@@ -19,7 +19,7 @@ jobs:
       - name: Super-Linter
         uses: super-linter/super-linter@v7.2.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ALL }}
 
   fix-lint-issues:
     permissions:
@@ -33,7 +33,7 @@ jobs:
       - name: Super-Linter
         uses: super-linter/super-linter@v7.2.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ALL }}
           FIX_SHELL_SHFMT: true
           FIX_YAML_PRETTIER: true
       - name: Commit and push linting fixes
