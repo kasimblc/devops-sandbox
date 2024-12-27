@@ -5,10 +5,12 @@ def factorial(n):
     else:
         return n * factorial(n - 1)
 
+
 def main():
     number = 5
     result = factorial(number)
     print(f"{number} sayısının faktöriyeli: {result}")
+
 
 if __name__ == "__main__":
     main()
