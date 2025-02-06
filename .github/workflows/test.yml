@@ -5,45 +5,100 @@ on:
 
 jobs:
   # Staging Pipeline
-  staging:
-    name: Staging Pipeline
+  staging-indirme:
+    name: Staging - Kod Indirme
     runs-on: ubuntu-latest
+    concurrency:
+      group: "staging-pipeline"
+      cancel-in-progress: true
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
 
-      - name: Staging - Yükleme
+  staging-yukleme:
+    name: Staging - Yukleme
+    runs-on: ubuntu-latest
+    needs: staging-indirme
+    concurrency:
+      group: "staging-pipeline"
+      cancel-in-progress: true
+    steps:
+      - name: Yükleme
         run: echo "Staging ortamına yükleme yapılıyor"
 
-      - name: Staging - Test
+  staging-test:
+    name: Staging - Test
+    runs-on: ubuntu-latest
+    needs: staging-yukleme
+    concurrency:
+      group: "staging-pipeline"
+      cancel-in-progress: true
+    steps:
+      - name: Test
         run: echo "Staging testleri yapılıyor"
 
-  # Batch Pipeline (Staging tamamlandıktan sonra başlar)
-  batch:
-    name: Batch Pipeline
+  # Batch Pipeline
+  batch-indirme:
+    name: Batch - Kod Indirme
     runs-on: ubuntu-latest
-    needs: staging  # Staging tamamlanmadan başlamaz
+    concurrency:
+      group: "batch-pipeline"
+      cancel-in-progress: true
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
 
-      - name: Batch - Yükleme
+  batch-yukleme:
+    name: Batch - Yukleme
+    runs-on: ubuntu-latest
+    needs: batch-indirme
+    concurrency:
+      group: "batch-pipeline"
+      cancel-in-progress: true
+    steps:
+      - name: Yükleme
         run: echo "Batch ortamına yükleme yapılıyor"
 
-      - name: Batch - Test
+  batch-test:
+    name: Batch - Test
+    runs-on: ubuntu-latest
+    needs: batch-yukleme
+    concurrency:
+      group: "batch-pipeline"
+      cancel-in-progress: true
+    steps:
+      - name: Test
         run: echo "Batch testleri yapılıyor"
 
-  # Prod Pipeline (Batch tamamlandıktan sonra başlar)
-  prod:
-    name: Prod Pipeline
+  # Prod Pipeline
+  prod-indirme:
+    name: Prod - Kod Indirme
     runs-on: ubuntu-latest
-    needs: batch  # Batch tamamlanmadan başlamaz
+    concurrency:
+      group: "prod-pipeline"
+      cancel-in-progress: true
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
 
-      - name: Prod - Yükleme
+  prod-yukleme:
+    name: Prod - Yukleme
+    runs-on: ubuntu-latest
+    needs: prod-indirme
+    concurrency:
+      group: "prod-pipeline"
+      cancel-in-progress: true
+    steps:
+      - name: Yükleme
         run: echo "Prod ortamına yükleme yapılıyor"
 
-      - name: Prod - Test
+  prod-test:
+    name: Prod - Test
+    runs-on: ubuntu-latest
+    needs: prod-yukleme
+    concurrency:
+      group: "prod-pipeline"
+      cancel-in-progress: true
+    steps:
+      - name: Test
         run: echo "Prod testleri yapılıyor"
