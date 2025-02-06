@@ -1,0 +1,42 @@
+name: CI/CD Multi-Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  staging:
+    name: Staging Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kod indirme
+        uses: actions/checkout@v3
+      - name: Yükleme
+        run: echo "Staging ortamına yükleme yapılıyor"
+      - name: Test
+        run: echo "Staging testleri yapılıyor"
+
+  batch:
+    name: Batch Deploy
+    runs-on: ubuntu-latest
+    needs: staging  # Staging tamamlandıktan sonra çalışacak
+    steps:
+      - name: Kod indirme
+        uses: actions/checkout@v3
+      - name: Yükleme
+        run: echo "Batch ortamına yükleme yapılıyor"
+      - name: Test
+        run: echo "Batch testleri yapılıyor"
+
+  prod:
+    name: Prod Deploy
+    runs-on: ubuntu-latest
+    needs: batch  # Batch tamamlandıktan sonra çalışacak
+    steps:
+      - name: Kod indirme
+        uses: actions/checkout@v3
+      - name: Yükleme
+        run: echo "Prod ortamına yükleme yapılıyor"
+      - name: Test
+        run: echo "Prod testleri yapılıyor"
