@@ -18,7 +18,7 @@ jobs:
   staging-yukleme:
     name: Staging - Yukleme
     runs-on: ubuntu-latest
-    needs: staging-indirme
+    needs: staging-indirme  # staging-indirme tamamlandığında başlar
     concurrency:
       group: "staging-pipeline"
       cancel-in-progress: true
@@ -29,7 +29,7 @@ jobs:
   staging-test:
     name: Staging - Test
     runs-on: ubuntu-latest
-    needs: staging-yukleme
+    needs: staging-yukleme  # staging-yukleme tamamlandığında başlar
     concurrency:
       group: "staging-pipeline"
       cancel-in-progress: true
@@ -41,6 +41,7 @@ jobs:
   batch-indirme:
     name: Batch - Kod Indirme
     runs-on: ubuntu-latest
+    needs: staging-test  # staging-test tamamlandığında başlar
     concurrency:
       group: "batch-pipeline"
       cancel-in-progress: true
@@ -51,7 +52,7 @@ jobs:
   batch-yukleme:
     name: Batch - Yukleme
     runs-on: ubuntu-latest
-    needs: batch-indirme
+    needs: batch-indirme  # batch-indirme tamamlandığında başlar
     concurrency:
       group: "batch-pipeline"
       cancel-in-progress: true
@@ -62,7 +63,7 @@ jobs:
   batch-test:
     name: Batch - Test
     runs-on: ubuntu-latest
-    needs: batch-yukleme
+    needs: batch-yukleme  # batch-yukleme tamamlandığında başlar
     concurrency:
       group: "batch-pipeline"
       cancel-in-progress: true
@@ -74,6 +75,7 @@ jobs:
   prod-indirme:
     name: Prod - Kod Indirme
     runs-on: ubuntu-latest
+    needs: batch-test  # batch-test tamamlandığında başlar
     concurrency:
       group: "prod-pipeline"
       cancel-in-progress: true
@@ -84,7 +86,7 @@ jobs:
   prod-yukleme:
     name: Prod - Yukleme
     runs-on: ubuntu-latest
-    needs: prod-indirme
+    needs: prod-indirme  # prod-indirme tamamlandığında başlar
     concurrency:
       group: "prod-pipeline"
       cancel-in-progress: true
@@ -95,7 +97,7 @@ jobs:
   prod-test:
     name: Prod - Test
     runs-on: ubuntu-latest
-    needs: prod-yukleme
+    needs: prod-yukleme  # prod-yukleme tamamlandığında başlar
     concurrency:
       group: "prod-pipeline"
       cancel-in-progress: true
