@@ -5,73 +5,45 @@ on:
 
 jobs:
   # Staging Pipeline
-  staging-indirme:
-    name: Staging - Kod Indirme
+  staging:
+    name: Staging Pipeline
     runs-on: ubuntu-latest
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
 
-  staging-yukleme:
-    name: Staging - Yukleme
-    runs-on: ubuntu-latest
-    needs: staging-indirme
-    steps:
-      - name: Yükleme
+      - name: Staging - Yükleme
         run: echo "Staging ortamına yükleme yapılıyor"
 
-  staging-test:
-    name: Staging - Test
-    runs-on: ubuntu-latest
-    needs: staging-yukleme
-    steps:
-      - name: Test
+      - name: Staging - Test
         run: echo "Staging testleri yapılıyor"
 
-  # Batch Pipeline
-  batch-indirme:
-    name: Batch - Kod Indirme
+  # Batch Pipeline (Staging tamamlandıktan sonra başlar)
+  batch:
+    name: Batch Pipeline
     runs-on: ubuntu-latest
+    needs: staging  # Staging tamamlanmadan başlamaz
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
 
-  batch-yukleme:
-    name: Batch - Yukleme
-    runs-on: ubuntu-latest
-    needs: batch-indirme
-    steps:
-      - name: Yükleme
+      - name: Batch - Yükleme
         run: echo "Batch ortamına yükleme yapılıyor"
 
-  batch-test:
-    name: Batch - Test
-    runs-on: ubuntu-latest
-    needs: batch-yukleme
-    steps:
-      - name: Test
+      - name: Batch - Test
         run: echo "Batch testleri yapılıyor"
 
-  # Prod Pipeline
-  prod-indirme:
-    name: Prod - Kod Indirme
+  # Prod Pipeline (Batch tamamlandıktan sonra başlar)
+  prod:
+    name: Prod Pipeline
     runs-on: ubuntu-latest
+    needs: batch  # Batch tamamlanmadan başlamaz
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
 
-  prod-yukleme:
-    name: Prod - Yukleme
-    runs-on: ubuntu-latest
-    needs: prod-indirme
-    steps:
-      - name: Yükleme
+      - name: Prod - Yükleme
         run: echo "Prod ortamına yükleme yapılıyor"
 
-  prod-test:
-    name: Prod - Test
-    runs-on: ubuntu-latest
-    needs: prod-yukleme
-    steps:
-      - name: Test
+      - name: Prod - Test
         run: echo "Prod testleri yapılıyor"
