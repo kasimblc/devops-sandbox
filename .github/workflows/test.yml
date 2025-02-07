@@ -8,6 +8,8 @@ jobs:
   staging-indirme:
     name: Staging - Kod Indirme
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
@@ -15,8 +17,9 @@ jobs:
   staging-yukleme:
     name: Staging - Yukleme
     runs-on: ubuntu-latest
-    needs: staging-indirme  # staging-indirme tamamlandığında başlar
-    if: success()  # Önceki tüm işler başarılıysa çalıştır
+    needs: staging-indirme
+    strategy:
+      max-parallel: 1
     steps:
       - name: Yükleme
         run: echo "Staging ortamına yükleme yapılıyor"
@@ -24,8 +27,9 @@ jobs:
   staging-test:
     name: Staging - Test
     runs-on: ubuntu-latest
-    needs: staging-yukleme  # staging-yukleme tamamlandığında başlar
-    if: success()  # Önceki tüm işler başarılıysa çalıştır
+    needs: staging-yukleme
+    strategy:
+      max-parallel: 1
     steps:
       - name: Test
         run: echo "Staging testleri yapılıyor"
@@ -34,7 +38,8 @@ jobs:
   batch-indirme:
     name: Batch - Kod Indirme
     runs-on: ubuntu-latest
-    if: success()  # Önceki tüm işler başarılıysa çalıştır
+    strategy:
+      max-parallel: 1
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
@@ -42,8 +47,9 @@ jobs:
   batch-yukleme:
     name: Batch - Yukleme
     runs-on: ubuntu-latest
-    needs: batch-indirme  # batch-indirme tamamlandığında başlar
-    if: success()  # Önceki tüm işler başarılıysa çalıştır
+    needs: batch-indirme
+    strategy:
+      max-parallel: 1
     steps:
       - name: Yükleme
         run: echo "Batch ortamına yükleme yapılıyor"
@@ -51,8 +57,9 @@ jobs:
   batch-test:
     name: Batch - Test
     runs-on: ubuntu-latest
-    needs: batch-yukleme  # batch-yukleme tamamlandığında başlar
-    if: success()  # Önceki tüm işler başarılıysa çalıştır
+    needs: batch-yukleme
+    strategy:
+      max-parallel: 1
     steps:
       - name: Test
         run: echo "Batch testleri yapılıyor"
@@ -61,7 +68,8 @@ jobs:
   prod-indirme:
     name: Prod - Kod Indirme
     runs-on: ubuntu-latest
-    if: success()  # Önceki tüm işler başarılıysa çalıştır
+    strategy:
+      max-parallel: 1
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
@@ -69,8 +77,9 @@ jobs:
   prod-yukleme:
     name: Prod - Yukleme
     runs-on: ubuntu-latest
-    needs: prod-indirme  # prod-indirme tamamlandığında başlar
-    if: success()  # Önceki tüm işler başarılıysa çalıştır
+    needs: prod-indirme
+    strategy:
+      max-parallel: 1
     steps:
       - name: Yükleme
         run: echo "Prod ortamına yükleme yapılıyor"
@@ -78,8 +87,9 @@ jobs:
   prod-test:
     name: Prod - Test
     runs-on: ubuntu-latest
-    needs: prod-yukleme  # prod-yukleme tamamlandığında başlar
-    if: success()  # Önceki tüm işler başarılıysa çalıştır
+    needs: prod-yukleme
+    strategy:
+      max-parallel: 1
     steps:
       - name: Test
         run: echo "Prod testleri yapılıyor"
