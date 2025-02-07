@@ -34,7 +34,7 @@ jobs:
   batch-indirme:
     name: Batch - Kod Indirme
     runs-on: ubuntu-latest
-    needs: [staging-indirme, staging-test]
+    needs: [staging-yukleme, staging-test, staging-indirme]
     steps:
       - name: Kod indirme
         run: echo "İndirme yapılıyor"
