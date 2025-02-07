@@ -8,8 +8,6 @@ jobs:
   staging-indirme:
     name: Staging - Kod Indirme
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
@@ -18,8 +16,6 @@ jobs:
     name: Staging - Yukleme
     runs-on: ubuntu-latest
     needs: staging-indirme
-    strategy:
-      max-parallel: 1
     steps:
       - name: Yükleme
         run: echo "Staging ortamına yükleme yapılıyor"
@@ -28,18 +24,20 @@ jobs:
     name: Staging - Test
     runs-on: ubuntu-latest
     needs: staging-yukleme
-    strategy:
-      max-parallel: 1
+    outputs:
+      success: ${{ steps.set_success.outputs.success }}
     steps:
       - name: Test
         run: echo "Staging testleri yapılıyor"
+      - name: Set Output
+        id: set_success
+        run: echo "::set-output name=success::true"
 
   # Batch Pipeline
   batch-indirme:
     name: Batch - Kod Indirme
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
+    if: ${{ needs.staging-test.outputs.success == 'true' }}
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
@@ -48,8 +46,6 @@ jobs:
     name: Batch - Yukleme
     runs-on: ubuntu-latest
     needs: batch-indirme
-    strategy:
-      max-parallel: 1
     steps:
       - name: Yükleme
         run: echo "Batch ortamına yükleme yapılıyor"
@@ -58,18 +54,20 @@ jobs:
     name: Batch - Test
     runs-on: ubuntu-latest
     needs: batch-yukleme
-    strategy:
-      max-parallel: 1
+    outputs:
+      success: ${{ steps.set_success.outputs.success }}
     steps:
       - name: Test
         run: echo "Batch testleri yapılıyor"
+      - name: Set Output
+        id: set_success
+        run: echo "::set-output name=success::true"
 
   # Prod Pipeline
   prod-indirme:
     name: Prod - Kod Indirme
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
+    if: ${{ needs.batch-test.outputs.success == 'true' }}
     steps:
       - name: Kod indirme
         uses: actions/checkout@v3
@@ -78,8 +76,6 @@ jobs:
     name: Prod - Yukleme
     runs-on: ubuntu-latest
     needs: prod-indirme
-    strategy:
-      max-parallel: 1
     steps:
       - name: Yükleme
         run: echo "Prod ortamına yükleme yapılıyor"
@@ -88,8 +84,11 @@ jobs:
     name: Prod - Test
     runs-on: ubuntu-latest
     needs: prod-yukleme
-    strategy:
-      max-parallel: 1
+    outputs:
+      success: ${{ steps.set_success.outputs.success }}
     steps:
       - name: Test
         run: echo "Prod testleri yapılıyor"
+      - name: Set Output
+        id: set_success
+        run: echo "::set-output name=success::true"
