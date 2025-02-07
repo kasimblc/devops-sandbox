@@ -31,7 +31,7 @@ jobs:
   # Wait for all staging jobs to finish before starting batch jobs
   wait-staging:
     runs-on: ubuntu-latest
-    needs: [staging-indirme, staging-yukleme, staging-test]
+    needs: [staging-indirme]
     steps:
       - name: Waiting for Staging jobs
         uses: einaregilsson/wait-for-jobs@v2
