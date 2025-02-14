@@ -35,4 +35,4 @@ jobs:
           clean: true
 
       - name: Test Deploy - ${{ matrix.environment }}
-        run: echo "Test Mode: Deploying to ${{ matrix.environment }} with action ${{ inputs.action }}"
+        run: echo "Test Mode"
