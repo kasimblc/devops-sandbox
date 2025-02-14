@@ -22,7 +22,7 @@ on:
 
 jobs:
   deploy-staging:
-    name: "Deploy Staging Environments"
+    name: "Deploy Staging"
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
