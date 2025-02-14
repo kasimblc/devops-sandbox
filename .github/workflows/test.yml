@@ -23,11 +23,11 @@ on:
 jobs:
   deploy-staging:
     name: "Deploy Staging Environments"
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
       matrix:
-        environment: ${{ inputs.environment == 'all' && fromJson('["staging-1", "staging-2"]') || fromJson(format('["{0}"]', inputs.environment)) }}
+        environment: ${{ inputs.environment == 'all' && fromJson('["staging-1", "staging-2", "staging-3", "staging-4"]') || fromJson(format('["{0}"]', inputs.environment)) }}
     steps:
       - name: Checkout Deploy Repository
         uses: actions/checkout@v4
