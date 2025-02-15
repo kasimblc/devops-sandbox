@@ -27,12 +27,26 @@ jobs:
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
       matrix:
-        environment: ${{ inputs.environment == 'all' && fromJson('["staging-1", "staging-2", "staging-3", "staging-4"]') || fromJson(format('["{0}"]', inputs.environment)) }}
+        environment: ${{ inputs.environment == 'all' && fromJson('["staging-1", "staging-2", "staging-3", "staging-4"]') || fromJson(format('["{0}\"]', inputs.environment)) }}
     steps:
       - name: Checkout Deploy Repository
         uses: actions/checkout@v4
         with:
           clean: true
 
+      - name: Read Environments File
+        id: read-env
+        run: |
+          echo "Reading liste/environments.yml"
+          echo "ENVIRONMENT_SERVERS=$(yq eval '.environments["${{ inputs.environment }}-list"].servers[].id' liste/environments.yml)" >> $GITHUB_ENV
+        env:
+          environment: ${{ inputs.environment }}
+
       - name: Test Deploy - ${{ matrix.environment }}
         run: echo "Test Mode"
+
+      - name: Deploy
+        run: |
+          echo "Deploying to servers: ${{ env.ENVIRONMENT_SERVERS }}"
+        env:
+          SERVERS: ${{ env.ENVIRONMENT_SERVERS }}
