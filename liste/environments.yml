@@ -1,0 +1,15 @@
+environments:
+  # Staging Listesi
+  staging-list:
+    servers:
+      - id: "staging-1"
+      - id: "staging-2"
+      - id: "staging-3"
+      - id: "staging-4"
+
+  # Prod Listesi
+  prod-list:
+    servers:
+      - id: "prod-1"
+      - id: "prod-2"
+      - id: "batch-1"
