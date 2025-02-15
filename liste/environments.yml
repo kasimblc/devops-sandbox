@@ -6,6 +6,10 @@ environments:
       - id: "staging-2"
       - id: "staging-3"
       - id: "staging-4"
+      - id: "Exe-1"
+      - id: "Exe-2"
+      - id: "Heyy-1"
+      - id: "Heyy-2"
 
   # Prod Listesi
   prod-list:
