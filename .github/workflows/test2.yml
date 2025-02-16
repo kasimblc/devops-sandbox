@@ -1,0 +1,42 @@
+name: Staging Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: >
+          Deployment Environment.
+          'all' → tüm staging deploy'ları çalışır,
+          'staging-1', 'staging-2' gibi spesifik değerler.
+        required: true
+        default: "all"
+        type: string
+      action:
+        description: "What action would you like to perform?"
+        required: true
+        default: "deploy"
+        type: choice
+        options:
+          - deploy
+          - rollback
+
+jobs:
+  set-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      environments: ${{ steps.set-matrix.outputs.environments }}
+    steps:
+      - name: Set matrix dynamically
+        id: set-matrix
+        run: |
+          if [[ "${{ inputs.environment }}" == "all" ]]; then
+            echo "environments=$(echo '["staging-1", "staging-2", "staging-3", "staging-4"]' | jq -c)" >> $GITHUB_OUTPUT
+          else
+            echo "environments=$(echo '["${{ inputs.environment }}"]' | jq -c)" >> $GITHUB_OUTPUT
+          fi
+
+  call-jobs:
+    needs: set-matrix
+    uses: ./.github/workflows/jobs.yml
+    with:
+      environments: ${{ needs.set-matrix.outputs.environments }}
