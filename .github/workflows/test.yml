@@ -24,17 +24,17 @@ jobs:
   deploy-staging:
     name: "Deploy Staging Environments"
     runs-on: self-hosted
+    outputs:
+      matrix_env: ${{ steps.set-matrix.outputs.matrix_env }}  # Output olarak tanımlıyoruz.
     steps:
       - name: Staging Servers'ı Yükle
-        run: echo "STAGING_SERVERS=$(grep 'staging_servers' liste/staging_servers.yml | cut -d ' ' -f2-)" >> $GITHUB_ENV
-
-      - name: Tanımlı Staging Sunucularını Ayarla
-        id: define_matrix
+        id: set-matrix
         run: |
+          STAGING_SERVERS=$(grep 'staging_servers' liste/staging-servers.yml | cut -d ' ' -f2-)
           if [ "${{ inputs.environment }}" == "all" ]; then
-            echo "matrix_env=${{ env.STAGING_SERVERS }}" >> $GITHUB_ENV
+            echo "matrix_env=$STAGING_SERVERS" >> $GITHUB_OUTPUT
           else
-            echo "matrix_env=[\"${{ inputs.environment }}\"]" >> $GITHUB_ENV
+            echo "matrix_env=[\"${{ inputs.environment }}\"]" >> $GITHUB_OUTPUT
           fi
 
   deploy-instances:
@@ -43,7 +43,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        environment: ${{ fromJson(env.matrix_env) }}
+        environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}  # `needs` üzerinden output çekiyoruz.
     steps:
       - name: Test Deploy - ${{ matrix.environment }}
-        run: echo "Test Mode:"
+        run: echo "Test Mode: Deploying to ${{ matrix.environment }} with action ${{ inputs.action }}"
