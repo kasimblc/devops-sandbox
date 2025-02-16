@@ -46,4 +46,4 @@ jobs:
         environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}  # `needs` üzerinden output çekiyoruz.
     steps:
       - name: Test Deploy - ${{ matrix.environment }}
-        run: echo "Test Mode: Deploying to ${{ matrix.environment }} with action ${{ inputs.action }}"
+        run: echo "Test Mode Deploying to ${{ matrix.environment }} with action ${{ inputs.action }}"
