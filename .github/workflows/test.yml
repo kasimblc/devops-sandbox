@@ -23,7 +23,7 @@ on:
 jobs:
   deploy-staging:
     name: "Deploy Staging Environments"
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       matrix_env: ${{ steps.set-matrix.outputs.matrix_env }}  # Output olarak tanımlıyoruz.
     steps:
@@ -39,7 +39,7 @@ jobs:
 
   deploy-instances:
     needs: deploy-staging
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
       matrix:
