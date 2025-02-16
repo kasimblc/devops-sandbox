@@ -13,7 +13,7 @@ jobs:
       - name: Read and Print Staging Servers
         shell: pwsh
         run: |
-          $content = Get-Content liste/staging-servers.yml
+          $content = Get-Content ./liste/staging-servers.yml
           $match = ($content -match '^staging_servers:\s*''\[(.*)\]''$') -replace 'staging_servers:\s*''\[','' -replace '\]''$',''
           $servers = $match -split '",\s*"'
           foreach ($server in $servers) {
