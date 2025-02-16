@@ -1,49 +1,21 @@
-name: Staging Deploy
+name: Read Staging Servers
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: >
-          Deployment Environment.
-          'all' → tüm staging deploy'ları çalışır,
-          'staging-1', 'staging-2' gibi spesifik değerler.
-        required: true
-        default: "all"
-        type: string
-      action:
-        description: "What action would you like to perform?"
-        required: true
-        default: "deploy"
-        type: choice
-        options:
-          - deploy
-          - rollback
 
 jobs:
-  deploy-staging:
-    name: "Deploy Staging Environments"
-    runs-on: ubuntu-latest
-    outputs:
-      matrix_env: ${{ steps.set-matrix.outputs.matrix_env }}  # Output olarak tanımlıyoruz.
+  print_servers:
+    runs-on: windows-latest
     steps:
-      - name: Staging Servers'ı Yükle
-        id: set-matrix
-        run: |
-          STAGING_SERVERS=$(grep 'staging_servers' liste/staging-servers.yml | cut -d ' ' -f2-)
-          if [ "${{ inputs.environment }}" == "all" ]; then
-            echo "matrix_env=$STAGING_SERVERS" >> $GITHUB_OUTPUT
-          else
-            echo "matrix_env=[\"${{ inputs.environment }}\"]" >> $GITHUB_OUTPUT
-          fi
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-  deploy-instances:
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
-      matrix:
-        environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}  # `needs` üzerinden output çekiyoruz.
-    steps:
-      - name: Test Deploy - ${{ matrix.environment }}
-        run: echo "Test Mode Deploying to ${{ matrix.environment }} with action ${{ inputs.action }}"
+      - name: Read and Print Staging Servers
+        shell: pwsh
+        run: |
+          $content = Get-Content liste/staging-servers.yml
+          $match = ($content -match '^staging_servers:\s*''\[(.*)\]''$') -replace 'staging_servers:\s*''\[','' -replace '\]''$',''
+          $servers = $match -split '",\s*"'
+          foreach ($server in $servers) {
+              Write-Output "Staging Server: $server"
+          }
