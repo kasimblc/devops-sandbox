@@ -22,23 +22,28 @@ on:
 
 jobs:
   deploy-staging:
-    name: "Deploy Staging"
-    runs-on: ubuntu-latest
+    name: "Deploy Staging Environments"
+    runs-on: self-hosted
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          clean: true
+      - name: Staging Servers'ı Yükle
+        run: echo "STAGING_SERVERS=$(grep 'staging_servers' liste/staging_servers.yml | cut -d ' ' -f2-)" >> $GITHUB_ENV
 
-      - name: Read Environments File
-        id: read-env
+      - name: Tanımlı Staging Sunucularını Ayarla
+        id: define_matrix
         run: |
-          echo "Reading liste/environments.yml"
-          SERVERS=$(yq eval '.environments["staging-list"].servers[].id' liste/environments.yml)
-          echo "SERVERS=$SERVERS" >> $GITHUB_ENV
+          if [ "${{ inputs.environment }}" == "all" ]; then
+            echo "matrix_env=${{ env.STAGING_SERVERS }}" >> $GITHUB_ENV
+          else
+            echo "matrix_env=[\"${{ inputs.environment }}\"]" >> $GITHUB_ENV
+          fi
 
-      - name: Set Matrix Environment
-        run: echo "matrix=[$SERVERS]" >> $GITHUB_ENV
-
-      - name: Test Deploy
-        run: echo "Test Mode"
+  deploy-instances:
+    needs: deploy-staging
+    runs-on: self-hosted
+    strategy:
+      max-parallel: 1
+      matrix:
+        environment: ${{ fromJson(env.matrix_env) }}
+    steps:
+      - name: Test Deploy - ${{ matrix.environment }}
+        run: echo "Test Mode:"
