@@ -1,4 +1,4 @@
-name: Staging Deploy - Last
+name: Staging Deploy 2
 
 on:
   workflow_dispatch:
@@ -32,14 +32,13 @@ jobs:
       - name: Tanımlı Staging Sunucularını Ayarla
         id: define_matrix
         run: |
-          $all = "${{ github.event.inputs.environment }}"
-          if ($all -eq 'all') {
-            echo "matrix_env=${{ env.STAGING_SERVERS }}" >> $GITHUB_OUTPUT
+          if ($env:GITHUB_EVENT.inputs.environment -eq "all") {
+            echo "matrix_env=$env:STAGING_SERVERS" >> $env:GITHUB_OUTPUT
           } else {
-            echo "matrix_env=@(${{ github.event.inputs.environment }})" >> $GITHUB_OUTPUT
+            echo "matrix_env=[\"$($env:GITHUB_EVENT.inputs.environment)\"]" >> $env:GITHUB_OUTPUT
           }
         shell: pwsh
-
+  
   deploy-instances:
     needs: deploy-staging
     runs-on: windows-latest
@@ -49,6 +48,5 @@ jobs:
         environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}
     steps:
       - name: Test Deploy - ${{ matrix.environment }}
-        run: |
-          Write-Host "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ github.event.inputs.action }}"
+        run: echo "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ github.event.inputs.action }}"
         shell: pwsh
