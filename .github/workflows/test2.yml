@@ -1,4 +1,4 @@
-name: Staging Deploy
+name: Staging Deploy 2
 
 on:
   workflow_dispatch:
@@ -23,28 +23,26 @@ on:
 jobs:
   deploy-staging:
     name: "Deploy Staging Environments"
-    runs-on: ubuntu-latest
-    # GitHub Environment'da tanımlı STAGING_EXAMPLE_1 kullanılıyor
-    environment: STAGING_EXAMPLE_1
+    runs-on: self-hosted
+    env:
+      STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
     outputs:
       matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
     steps:
-      - name: Set matrix environment
+      - name: Tanımlı Staging Sunucularını Ayarla
         id: define_matrix
         run: |
-          if [ "${{ github.event.inputs.environment }}" == "all" ]; then
-            # GitHub Environment içinde STAGING_SERVERS olarak tanımlı virgülle ayrılmış string'i JSON array'e çeviriyoruz.
-            json_array=$(echo "[\"$(echo "$STAGING_SERVERS" | sed 's/,/","/g')\"]")
-            echo "matrix_env=$json_array" >> $GITHUB_OUTPUT
+          if [ "${{ github.event.inputs.environment }}" = "all" ]; then
+            echo "matrix_env=$STAGING_SERVERS" >> $GITHUB_OUTPUT
           else
             echo "matrix_env=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_OUTPUT
           fi
 
   deploy-instances:
     needs: deploy-staging
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
-      max-parallel: 1  # İşlemleri sırayla çalıştırır.
+      max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
       matrix:
         environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}
     steps:
