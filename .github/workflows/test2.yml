@@ -23,26 +23,29 @@ on:
 jobs:
   deploy-staging:
     name: "Deploy Staging Environments"
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     env:
       STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
     steps:
       - name: Tanımlı Staging Sunucularını Ayarla
         id: define_matrix
         run: |
-          if [[ "${{ github.event.inputs.environment }}" == "all" ]]; then
-            echo "matrix_env=$STAGING_SERVERS" >> $GITHUB_ENV
-          else
-            echo "matrix_env=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_ENV
-        shell: bash
+          if (${{ github.event.inputs.environment }} -eq 'all') {
+            Write-Host "matrix_env=$STAGING_SERVERS" | Out-File -FilePath $env:GITHUB_ENV -Append
+          } else {
+            Write-Host "matrix_env=@("${{ github.event.inputs.environment }}")" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+        shell: pwsh
 
   deploy-instances:
     needs: deploy-staging
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
       matrix:
         environment: ${{ fromJson(env.matrix_env) }}
     steps:
       - name: Test Deploy - ${{ matrix.environment }}
-        run: echo "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ github.event.inputs.action }}"
+        run: |
+          Write-Host "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ github.event.inputs.action }}"
+        shell: pwsh
