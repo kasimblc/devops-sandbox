@@ -15,6 +15,8 @@ jobs:
       - name: Tanımlı Staging Sunucularını Ayarla
         id: define_matrix
         shell: pwsh
+        env:
+          STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
         run: |
           # Giriş değeri; örneğin "all" ya da belirli bir sunucu adı bekleniyor.
           $env_input = "${{ github.event.inputs.environment }}"
@@ -22,8 +24,8 @@ jobs:
             # $env:STAGING_SERVERS zaten JSON formatında tanımlı!
             "matrix_env=$($env:STAGING_SERVERS)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8
           } else {
-            # Tek bir environment değeri için JSON array oluşturuyoruz
-            $single_env = "[\"$env_input\"]"
+            # Tek bir environment değeri için JSON array oluşturuyoruz.
+            $single_env = "[" + '"' + $env_input + '"' + "]"
             "matrix_env=$single_env" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8
           }
 
