@@ -21,27 +21,29 @@ on:
           - rollback
 
 jobs:
-  set-matrix:
+  deploy-staging:
+    name: "Deploy Staging Environments"
     runs-on: ubuntu-latest
-    outputs:
-      environments: ${{ steps.set-matrix.outputs.environments }}
-    environment: example  # Burada GitHub Environments kullanıyoruz!
+    # GitHub Environments'da STAGING_EXAMPLE_1 adında tanımlı environment değişkenini kullanıyoruz.
+    environment: STAGING_EXAMPLE_1
     steps:
-      - name: Set matrix dynamically from GitHub Environments
-        id: set-matrix
+      - name: Tanımlı Staging Sunucularını Ayarla
+        id: define_matrix
         run: |
-          echo "Available environment variable list:"
-          printenv  # Debug amaçlı ortam değişkenlerini yazdır.
-
-          if [[ "${{ inputs.environment }}" == "all" ]]; then
-            # GitHub Environments içinde tanımlı değişkeni JSON formatında oku
-            echo "environments=${{ vars.staging_example_1 }}" >> $GITHUB_OUTPUT
+          # Eğer tüm ortamlar deploy edilecekse, GitHub Environment üzerinden gelen JSON array'i kullanıyoruz.
+          if [ "${{ inputs.environment }}" == "all" ]; then
+            echo "matrix_env=$STAGING_EXAMPLE_1" >> $GITHUB_ENV
           else
-            echo "environments=$(echo '["${{ inputs.environment }}"]' | jq -c)" >> $GITHUB_OUTPUT
+            echo "matrix_env=[\"${{ inputs.environment }}\"]" >> $GITHUB_ENV
           fi
 
-  call-jobs:
-    needs: set-matrix
-    uses: ./.github/workflows/jobs.yml
-    with:
-      environments: ${{ needs.set-matrix.outputs.environments }}
+  deploy-instances:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1  # İşlemleri sırayla çalıştırır.
+      matrix:
+        environment: ${{ fromJson(env.matrix_env) }}
+    steps:
+      - name: Test Deploy - ${{ matrix.environment }}
+        run: echo "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ inputs.action }}"
