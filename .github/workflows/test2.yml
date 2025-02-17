@@ -1,13 +1,30 @@
-name: Staging Deployment
+name: Staging Deploy 2
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: >
+          Deployment Environment.
+          'all' → tüm staging deploy'ları çalışır,
+          'staging-1', 'staging-2' gibi spesifik değerler.
+        required: true
+        default: "all"
+        type: string
+      action:
+        description: "What action would you like to perform?"
+        required: true
+        default: "deploy"
+        type: choice
+        options:
+          - deploy
+          - rollback
 
 jobs:
   deploy-staging:
     name: "Deploy Staging Environments"
     runs-on: windows-latest
     env:
-      # Dikkat: STAGING_SERVERS değeri string olarak tanımlandı!
       STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
     outputs:
       matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
@@ -15,33 +32,30 @@ jobs:
       - name: Tanımlı Staging Sunucularını Ayarla
         id: define_matrix
         shell: pwsh
-        env:
-          STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
         run: |
-          # Giriş değeri; örneğin "all" ya da belirli bir sunucu adı bekleniyor.
-          $env_input = "${{ github.event.inputs.environment }}"
-          if ($env_input -eq "all") {
-            # $env:STAGING_SERVERS zaten JSON formatında tanımlı!
-            "matrix_env=$($env:STAGING_SERVERS)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8
-          } else {
-            # Tek bir environment değeri için JSON array oluşturuyoruz.
-            $single_env = "[" + '"' + $env_input + '"' + "]"
-            "matrix_env=$single_env" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8
+          # GitHub input değerini doğrudan context'ten alıyoruz
+          $environment = "${{ github.event.inputs.environment }}"
+          Write-Output "Using environment: $environment"
+          if ($environment -eq "all") {
+            $output = "matrix_env=" + $env:STAGING_SERVERS
+            Write-Output "Output: $output"
+            Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
-
-      - name: Debug Matrix Çıktısı
-        run: |
-          echo "Matrix Env: ${{ steps.define_matrix.outputs.matrix_env }}"
+          else {
+            $output = "matrix_env=[`"$environment`"]"
+            Write-Output "Output: $output"
+            Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
+          }
 
   deploy-instances:
     needs: deploy-staging
     runs-on: windows-latest
     strategy:
-      max-parallel: 1  # Paralel çalışmayı önler; işlemleri sırayla yapar.
+      max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
       matrix:
         environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}
     steps:
       - name: Test Deploy - ${{ matrix.environment }}
         shell: pwsh
         run: |
-          Write-Output "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ github.event.inputs.action }}"
+          Write-Output "Test Mode - Deploying to $($matrix.environment) with action ${{ github.event.inputs.action }}"
