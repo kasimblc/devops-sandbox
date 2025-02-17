@@ -23,7 +23,7 @@ on:
 jobs:
   deploy-staging:
     name: "Deploy Staging Environments"
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
     outputs:
@@ -40,7 +40,7 @@ jobs:
 
   deploy-instances:
     needs: deploy-staging
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
       matrix:
