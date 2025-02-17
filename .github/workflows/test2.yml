@@ -25,12 +25,17 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       environments: ${{ steps.set-matrix.outputs.environments }}
+    environment: example  # Burada GitHub Environments kullanıyoruz!
     steps:
-      - name: Set matrix dynamically
+      - name: Set matrix dynamically from GitHub Environments
         id: set-matrix
         run: |
+          echo "Available environment variable list:"
+          printenv  # Debug amaçlı ortam değişkenlerini yazdır.
+
           if [[ "${{ inputs.environment }}" == "all" ]]; then
-            echo "environments=$(echo '["staging-1", "staging-2", "staging-3", "staging-4"]' | jq -c)" >> $GITHUB_OUTPUT
+            # GitHub Environments içinde tanımlı değişkeni JSON formatında oku
+            echo "environments=${{ vars.staging_example_1 }}" >> $GITHUB_OUTPUT
           else
             echo "environments=$(echo '["${{ inputs.environment }}"]' | jq -c)" >> $GITHUB_OUTPUT
           fi
