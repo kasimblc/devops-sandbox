@@ -33,11 +33,10 @@ jobs:
         id: define_matrix
         shell: pwsh
         run: |
-          if ($env:INPUT_ENVIRONMENT -eq "all") {
-            Write-Output "matrix_env=$($env:STAGING_SERVERS)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          }
-          else {
-            Write-Output "matrix_env=[`"$($env:INPUT_ENVIRONMENT)`"]" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          if ("${{ github.event.inputs.environment }}" -eq "all") {
+            "matrix_env=${{ env.STAGING_SERVERS }}" >> $env:GITHUB_OUTPUT
+          } else {
+            "matrix_env=[`"${{ github.event.inputs.environment }}`"]" >> $env:GITHUB_OUTPUT
           }
 
   deploy-instances:
@@ -51,4 +50,4 @@ jobs:
       - name: Test Deploy - ${{ matrix.environment }}
         shell: pwsh
         run: |
-          Write-Output "Test Mode - Deploying to $($matrix.environment) with action $env:INPUT_ACTION"
+          Write-Output "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ github.event.inputs.action }}"
