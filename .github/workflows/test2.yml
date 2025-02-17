@@ -26,14 +26,16 @@ jobs:
     runs-on: windows-latest
     env:
       STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
+    outputs:
+      matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
     steps:
       - name: Tanımlı Staging Sunucularını Ayarla
         id: define_matrix
         run: |
           if (${{ github.event.inputs.environment }} -eq 'all') {
-            Write-Host "matrix_env=$STAGING_SERVERS" | Out-File -FilePath $env:GITHUB_ENV -Append
+            echo "matrix_env=${{ env.STAGING_SERVERS }}" >> $GITHUB_OUTPUT
           } else {
-            Write-Host "matrix_env=@("${{ github.event.inputs.environment }}")" | Out-File -FilePath $env:GITHUB_ENV -Append
+            echo "matrix_env=@("${{ github.event.inputs.environment }}")" >> $GITHUB_OUTPUT
           }
         shell: pwsh
 
@@ -43,7 +45,7 @@ jobs:
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
       matrix:
-        environment: ${{ fromJson(env.matrix_env) }}
+        environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}
     steps:
       - name: Test Deploy - ${{ matrix.environment }}
         run: |
