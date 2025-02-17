@@ -32,10 +32,11 @@ jobs:
       - name: Tanımlı Staging Sunucularını Ayarla
         id: define_matrix
         run: |
-          if (${{ github.event.inputs.environment }} -eq 'all') {
+          $all = "${{ github.event.inputs.environment }}"
+          if ($all -eq 'all') {
             echo "matrix_env=${{ env.STAGING_SERVERS }}" >> $GITHUB_OUTPUT
           } else {
-            echo "matrix_env=@("${{ github.event.inputs.environment }}")" >> $GITHUB_OUTPUT
+            echo "matrix_env=@(${{ github.event.inputs.environment }})" >> $GITHUB_OUTPUT
           }
         shell: pwsh
 
