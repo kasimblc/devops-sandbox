@@ -33,19 +33,26 @@ jobs:
         id: define_matrix
         shell: pwsh
         run: |
-          # GitHub input değerini doğrudan context'ten alıyoruz
           $environment = "${{ github.event.inputs.environment }}"
           Write-Output "Using environment: $environment"
+          
+          # STAGING_SERVERS ortam değişkenini JSON dizisine dönüştürüyoruz.
+          $allowedEnvironments = $env:STAGING_SERVERS | ConvertFrom-Json
+          
           if ($environment -eq "all") {
             $output = "matrix_env=" + $env:STAGING_SERVERS
             Write-Output "Output: $output"
             Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
-          else {
-            $output = "matrix_env=[`"$environment`"]"
+          elseif ($allowedEnvironments -contains $environment) {
+            $output = "matrix_env=[" + '"' + $environment + '"' + "]"
             Write-Output "Output: $output"
             Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
+          else {
+            Write-Error "Invalid environment: $environment. Allowed values are 'all' or one of: $($allowedEnvironments -join ', ')"
+          }
+
 
   deploy-instances:
     needs: deploy-staging
