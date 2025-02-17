@@ -34,19 +34,6 @@ jobs:
         with:
           clean: true
 
-      - name: Read Environments File
-        id: read-env
-        run: |
-          echo "Reading liste/environments.yml"
-          echo "ENVIRONMENT_SERVERS=$(yq eval '.environments["${{ inputs.environment }}-list"].servers[].id' liste/environments.yml)" >> $GITHUB_ENV
-        env:
-          environment: ${{ inputs.environment }}
-
       - name: Test Deploy - ${{ matrix.environment }}
         run: echo "Test Mode - Deploying to ${{ env.SERVERS }} with action ${{ inputs.action }}"
 
-      - name: Deploy
-        run: |
-          echo "Deploying to servers: ${{ env.ENVIRONMENT_SERVERS }}"
-        env:
-          SERVERS: ${{ env.ENVIRONMENT_SERVERS }}
