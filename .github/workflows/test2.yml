@@ -32,11 +32,12 @@ jobs:
       - name: Tanımlı Staging Sunucularını Ayarla
         id: define_matrix
         run: |
-          if [ "${{ github.event.inputs.environment }}" = "all" ]; then
-            echo "matrix_env=$STAGING_SERVERS" >> $GITHUB_OUTPUT
-          else
-            echo "matrix_env=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_OUTPUT
-          fi
+          if ($env:GITHUB_EVENT.inputs.environment -eq "all") {
+            Write-Output "matrix_env=$env:STAGING_SERVERS" | Out-File -FilePath $env:GITHUB_OUTPUT
+          } else {
+            Write-Output "matrix_env=[`"$($env:GITHUB_EVENT.inputs.environment)`"]" | Out-File -FilePath $env:GITHUB_OUTPUT
+        shell: pwsh
+  
   deploy-instances:
     needs: deploy-staging
     runs-on: windows-latest
@@ -46,4 +47,5 @@ jobs:
         environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}
     steps:
       - name: Test Deploy - ${{ matrix.environment }}
-        run: echo "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ github.event.inputs.action }}"
+        run: Write-Output "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ github.event.inputs.action }}"
+        shell: pwsh
