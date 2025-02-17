@@ -24,7 +24,7 @@ jobs:
   deploy-staging:
     name: "Deploy Staging Environments"
     runs-on: ubuntu-latest
-    # GitHub Environments'da tanımlı STAGING_EXAMPLE_1 ortamını kullanıyoruz.
+    # GitHub Environment'da tanımlı STAGING_EXAMPLE_1 kullanılıyor
     environment: STAGING_EXAMPLE_1
     outputs:
       matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
@@ -32,9 +32,10 @@ jobs:
       - name: Set matrix environment
         id: define_matrix
         run: |
-          # Eğer tüm ortamlar deploy edilecekse, GitHub Environment üzerinden tanımlı STAGING_EXAMPLE_1 değişkenini kullanıyoruz.
           if [ "${{ github.event.inputs.environment }}" == "all" ]; then
-            echo "matrix_env=$STAGING_EXAMPLE_1" >> $GITHUB_OUTPUT
+            # GitHub Environment içinde STAGING_SERVERS olarak tanımlı virgülle ayrılmış string'i JSON array'e çeviriyoruz.
+            json_array=$(echo "[\"$(echo "$STAGING_SERVERS" | sed 's/,/","/g')\"]")
+            echo "matrix_env=$json_array" >> $GITHUB_OUTPUT
           else
             echo "matrix_env=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_OUTPUT
           fi
