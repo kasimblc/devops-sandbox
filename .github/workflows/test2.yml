@@ -1,4 +1,4 @@
-name: Staging Deploy 2
+name: Staging Deploy - Last
 
 on:
   workflow_dispatch:
@@ -26,17 +26,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
-    outputs:
-      matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
     steps:
       - name: Tanımlı Staging Sunucularını Ayarla
         id: define_matrix
         run: |
-          if [ "${{ github.event.inputs.environment }}" = "all" ]; then
-            echo "matrix_env=$STAGING_SERVERS" >> $GITHUB_OUTPUT
+          if [[ "${{ github.event.inputs.environment }}" == "all" ]]; then
+            echo "matrix_env=$STAGING_SERVERS" >> $GITHUB_ENV
           else
-            echo "matrix_env=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_OUTPUT
-          fi
+            echo "matrix_env=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_ENV
+        shell: bash
 
   deploy-instances:
     needs: deploy-staging
@@ -44,7 +42,7 @@ jobs:
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
       matrix:
-        environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}
+        environment: ${{ fromJson(env.matrix_env) }}
     steps:
       - name: Test Deploy - ${{ matrix.environment }}
         run: echo "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ github.event.inputs.action }}"
