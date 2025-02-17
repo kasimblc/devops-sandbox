@@ -7,6 +7,7 @@ jobs:
     name: "Deploy Staging Environments"
     runs-on: windows-latest
     env:
+      # Dikkat: STAGING_SERVERS değeri string olarak tanımlandı!
       STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
     outputs:
       matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
@@ -15,11 +16,14 @@ jobs:
         id: define_matrix
         shell: pwsh
         run: |
+          # Giriş değeri; örneğin "all" ya da belirli bir sunucu adı bekleniyor.
           $env_input = "${{ github.event.inputs.environment }}"
           if ($env_input -eq "all") {
-            "matrix_env=${{ env.STAGING_SERVERS }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8
+            # $env:STAGING_SERVERS zaten JSON formatında tanımlı!
+            "matrix_env=$($env:STAGING_SERVERS)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8
           } else {
-            $single_env = "[`"$env_input`"]"
+            # Tek bir environment değeri için JSON array oluşturuyoruz
+            $single_env = "[\"$env_input\"]"
             "matrix_env=$single_env" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8
           }
 
@@ -31,7 +35,7 @@ jobs:
     needs: deploy-staging
     runs-on: windows-latest
     strategy:
-      max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
+      max-parallel: 1  # Paralel çalışmayı önler; işlemleri sırayla yapar.
       matrix:
         environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}
     steps:
