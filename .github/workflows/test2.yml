@@ -24,17 +24,19 @@ jobs:
   deploy-staging:
     name: "Deploy Staging Environments"
     runs-on: ubuntu-latest
-    # GitHub Environments'da STAGING_EXAMPLE_1 adında tanımlı environment değişkenini kullanıyoruz.
+    # GitHub Environments'da tanımlı STAGING_EXAMPLE_1 ortamını kullanıyoruz.
     environment: STAGING_EXAMPLE_1
+    outputs:
+      matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
     steps:
-      - name: Tanımlı Staging Sunucularını Ayarla
+      - name: Set matrix environment
         id: define_matrix
         run: |
-          # Eğer tüm ortamlar deploy edilecekse, GitHub Environment üzerinden gelen JSON array'i kullanıyoruz.
-          if [ "${{ inputs.environment }}" == "all" ]; then
-            echo "matrix_env=$STAGING_EXAMPLE_1" >> $GITHUB_ENV
+          # Eğer tüm ortamlar deploy edilecekse, GitHub Environment üzerinden tanımlı STAGING_EXAMPLE_1 değişkenini kullanıyoruz.
+          if [ "${{ github.event.inputs.environment }}" == "all" ]; then
+            echo "matrix_env=$STAGING_EXAMPLE_1" >> $GITHUB_OUTPUT
           else
-            echo "matrix_env=[\"${{ inputs.environment }}\"]" >> $GITHUB_ENV
+            echo "matrix_env=[\"${{ github.event.inputs.environment }}\"]" >> $GITHUB_OUTPUT
           fi
 
   deploy-instances:
@@ -43,7 +45,7 @@ jobs:
     strategy:
       max-parallel: 1  # İşlemleri sırayla çalıştırır.
       matrix:
-        environment: ${{ fromJson(env.matrix_env) }}
+        environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}
     steps:
       - name: Test Deploy - ${{ matrix.environment }}
-        run: echo "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ inputs.action }}"
+        run: echo "Test Mode - Deploying to ${{ matrix.environment }} with action ${{ github.event.inputs.action }}"
