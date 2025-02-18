@@ -43,12 +43,12 @@ jobs:
         id: define_matrix
         shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
         run: |
-          $environment = "${{ inputs.ENVIRONMENT }}"  # Kullanıcıdan alınan environment değerini al // Get the environment value from the user
-          $allowedEnvironments = ${{ inputs.TARGET_SERVERS }} | ConvertFrom-Json  # JSON dizisine dönüştür // Convert to JSON array
-
+          $environment = "all"  # Kullanıcıdan alınan environment değerini al // Get the environment value from the user
+          $allowedEnvironments = @("staging-1", "staging-2", "staging-3")  # JSON dizisine dönüştür // Convert to JSON array
+          
           if ($environment -eq "all") {
             # Tüm ortamlar için işlem uygulanır // Apply to all environments
-            $output = "matrix_env=" + ${{ inputs.TARGET_SERVERS }}
+            $output = "matrix_env=" + ($allowedEnvironments | ConvertTo-Json -Compress)
             Write-Output "Output: $output"
             Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
