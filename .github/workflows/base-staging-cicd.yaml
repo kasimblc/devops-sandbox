@@ -1,79 +1,66 @@
-# ===================================================================================
-# Base Staging CI/CD Pipeline
-# Tüm firmalar için ortak staging pipeline şablonu
-# Özel firmalar için başka YAML dosyaları oluşturulabilir ve bu base dosyayı içeri alarak kullanabilirler.
-# ===================================================================================
-
-name: Base Staging CI/CD
+name: Base Staging Workflow
 
 on:
-  workflow_call:  # Başka YAML dosyaları bunu çağırarak içeri alabilir
+  workflow_call:
     inputs:
       environment:
-        required: true  # Ortam bilgisi zorunludur
+        description: "Hedef staging environment (ör. 'all', 'staging-1', 'staging-2', ...)"
+        required: true
         type: string
-        default: "all"  # Varsayılan olarak 'all' seçeneği seçilir, tüm staging sunucularına deploy yapılır
       action:
-        required: true  # Yapılacak işlem bilgisi zorunludur
+        description: "Gerçekleştirilecek işlem (deploy, rollback, first-setup)"
+        required: true
         type: string
-        default: "deploy"  # Varsayılan işlem 'deploy' olarak belirlenmiştir
-      STAGING_SERVERS:
-        required: true  # Staging sunucularının listesi zorunludur
-        type: string
-        default: '["staging-1", "staging-2", "staging-3", "staging-4"]'  # Varsayılan staging sunucuları
-
-# ====================================================================
-# Staging Matrix Oluşturma
-# Kullanıcının seçtiği ortam değerine göre hedef sunucu listesini belirler.
-# "all" → Tüm sunucular seçilir, belirli bir isim → Sadece o sunucu.
-# ====================================================================
-
+      secrets:
+        # Gerekli secret'larınızı burada tanımlayabilirsiniz.
+        # Örnek: DEPLOY_TOKEN: {}
+      
 jobs:
   staging-jobs:
     name: "Create Staging Matrix"
     runs-on: windows-latest
+    env:  
+      # Staging sunucularını buradan güncelleyebilirsiniz.
+      STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
     outputs:
-      # Burada oluşturulan matrix_env çıktısı, bir sonraki job (staging-instances) tarafından kullanılacaktır.
       matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
     steps:
-      - name: Define Available Staging Servers  # Staging sunucularını belirle
+      - name: Define Available Staging Servers
         id: define_matrix
         shell: pwsh
         run: |
           $environment = "${{ inputs.environment }}"
-          $allowedEnvironments = ${{ inputs.STAGING_SERVERS }} | ConvertFrom-Json
-
+          Write-Output "Using environment: $environment"
+          
+          # STAGING_SERVERS ortam değişkenini JSON dizisine dönüştürüyoruz.
+          $allowedEnvironments = $env:STAGING_SERVERS | ConvertFrom-Json
+          
           if ($environment -eq "all") {
-            # Deploy to all environments / Tüm ortamlar için deploy
-            $output = "matrix_env=" + ${{ inputs.STAGING_SERVERS }}
+            # Tüm ortamlara deploy yapılacak
+            $output = "matrix_env=" + $env:STAGING_SERVERS
             Write-Output "Output: $output"
             Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
           elseif ($allowedEnvironments -contains $environment) {
-            # Deploy to a specific environment / Belirtilen ortama deploy
+            # Sadece belirtilen ortama deploy yapılacak
             $output = "matrix_env=[" + '"' + $environment + '"' + "]"
             Write-Output "Output: $output"
             Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
           else {
-            # Error handling for invalid environments / Geçersiz ortamlar için hata kontrolü
             Write-Error "Invalid environment: $environment. Allowed values are 'all' or one of: $($allowedEnvironments -join ', ')"
           }
 
-# ===============================================================================
-# Staging Deployment İşlemi
-# Matrix ile oluşturulan sunucular için dağıtım işlemini gerçekleştirir.
-# ===============================================================================
-
   staging-instances:
-    needs: staging-jobs  # Bu job'un başlaması için staging-jobs'un tamamlanması gerekiyor.
+    name: "Execute Action on Staging Instances"
+    needs: staging-jobs
     runs-on: windows-latest
     strategy:
-      max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır. (Öncelikli olarak sıralı çalıştırma gerektiren işlemler için)
+      max-parallel: 1  # İşlemlerin sırayla çalışması için
       matrix:
-        environment: ${{ fromJson(needs.staging-jobs.outputs.matrix_env) }}  # Önceki job'un çıktısındaki environment değerlerini alır.
+        environment: ${{ fromJson(needs.staging-jobs.outputs.matrix_env) }}
     steps:
-      - name: ${{ matrix.environment }} - ${{ inputs.action }}  # İşlem yapılacak hedef ortam ve işlem türü
+      - name: ${{ matrix.environment }} - ${{ inputs.action }}
         shell: pwsh
         run: |
-          Write-Output "Deploying to ${{ matrix.environment }} with action ${{ inputs.action }}"
+          Write-Output "Test Mode - Deploying to --- ${{ matrix.environment }} --- with action --- ${{ inputs.action }} ---"
