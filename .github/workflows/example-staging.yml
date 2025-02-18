@@ -91,6 +91,6 @@ jobs:
       - name: ${{ matrix.environment }} - ${{ github.event.inputs.action }}  # İşlem yapılacak hedef ortam ve işlem türü
         shell: pwsh
         run: |
-          Write-Output "Test Mode - Deploying to $($matrix.environment) with action ${{ github.event.inputs.action }}"
+          Write-Output "Test Mode - Deploying to --- ${{ matrix.environment }} --- with action --- ${{ github.event.inputs.action }} ---"
 
           
