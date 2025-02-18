@@ -1,70 +1,88 @@
-name: Base Staging Workflow
+# ===================================================================================
+# Base CI/CD Workflow
+# Tüm firmalar için ortak CI/CD pipeline şablonu. Özel firmalar için başka YAML dosyaları oluşturulabilir ve bu base dosyayı içeri alarak kullanabilirler.
+# Base CI/CD Workflow
+# Common CI/CD pipeline template for all companies. Separate YAML files can be created for special companies and they can use this base file.
+# ===================================================================================
+
+name: Base CI/CD Workflow
 
 on:
-  workflow_call:
+  workflow_call:  # Başka YAML dosyaları bunu çağırarak içeri alabilir // Other YAML files can include this by calling it
     inputs:
-      environment:
-        description: "Hedef staging environment (ör. 'all', 'staging-1', 'staging-2', ...)"
-        required: true
+      ENVIRONMENT:
+        required: true  # Ortam bilgisi zorunludur // Environment information is mandatory
         type: string
-      action:
-        description: "Gerçekleştirilecek işlem (deploy, rollback, first-setup)"
-        required: true
+        default: "all"  # Varsayılan olarak 'all' seçeneği seçilir, tüm hedef sunuculara işlem uygulanır // Default 'all' option is selected, applies to all target servers
+      ACTION:
+        required: true  # Yapılacak işlem bilgisi zorunludur // Action information is mandatory
         type: string
-      STAGING_SERVERS:
-        description: "Deployment yapılacak staging sunucuları"
-        required: true
-        type: string  # Veya JSON array olarak da alabilirsiniz
-  # secrets:
-      # Gerekli secret'larınızı burada tanımlayabilirsiniz.
-      # Örnek: DEPLOY_TOKEN: {}
+        default: "deploy"  # Varsayılan işlem 'deploy' olarak belirlenmiştir // Default action is set to 'deploy'
+      TARGET_SERVERS:
+        required: true  # Hedef sunucuların listesi zorunludur // List of target servers is mandatory
+        type: string
+        default: '["server-1", "server-2", "server-3"]'  # Varsayılan hedef sunucular // Default target servers
+
+# ====================================================================
+# Workflow Matrix Oluşturma
+# Kullanıcının seçtiği ortam değerine göre hedef sunucu listesini belirler. "all" → Tüm sunucular seçilir, belirli bir isim → Sadece o sunucu.
+# Creating Workflow Matrix
+# Determines the target server list based on the environment value selected by the user. "all" → Selects all servers, specific name → Only that server.
+# ====================================================================
 
 jobs:
-  staging-jobs:
-    name: "Create Staging Matrix"
-    runs-on: windows-latest
-    env:  
-      # Staging sunucularını buradan güncelleyebilirsiniz.
-      STAGING_SERVERS: "${{ inputs.STAGING_SERVERS }}"
+  create-matrix:
+    name: "Create Matrix"
+    runs-on: windows-latest  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
     outputs:
+      # Burada oluşturulan matrix_env çıktısı, bir sonraki job (execute-matrix) tarafından kullanılacaktır.
+      # The matrix_env output created here will be used by the next job (execute-matrix).
       matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
     steps:
-      - name: Define Available Staging Servers
+      - name: Determine Target Environments  # Hedef sunucuları belirle // Determine target servers
         id: define_matrix
-        shell: pwsh
+        shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
         run: |
-          $environment = "${{ inputs.environment }}"
-          Write-Output "Using environment: $environment"
-          
-          # STAGING_SERVERS ortam değişkenini JSON dizisine dönüştürüyoruz.
-          $allowedEnvironments = $env:STAGING_SERVERS | ConvertFrom-Json
-          
+          $environment = "${{ inputs.ENVIRONMENT }}"  # Kullanıcıdan alınan environment değerini al // Get the environment value from the user
+          $allowedEnvironments = ${{ inputs.TARGET_SERVERS }} | ConvertFrom-Json  # JSON dizisine dönüştür // Convert to JSON array
+
           if ($environment -eq "all") {
-            # Tüm ortamlara deploy yapılacak
-            $output = "matrix_env=" + $env:STAGING_SERVERS
+            # Tüm ortamlar için işlem uygulanır // Apply to all environments
+            $output = "matrix_env=" + ${{ inputs.TARGET_SERVERS }}
             Write-Output "Output: $output"
             Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
           elseif ($allowedEnvironments -contains $environment) {
-            # Sadece belirtilen ortama deploy yapılacak
+            # Belirtilen ortama işlem uygulanır // Apply to a specific environment
             $output = "matrix_env=[" + '"' + $environment + '"' + "]"
             Write-Output "Output: $output"
             Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
           else {
+            # Geçersiz ortamlar için hata kontrolü // Error handling for invalid environments
             Write-Error "Invalid environment: $environment. Allowed values are 'all' or one of: $($allowedEnvironments -join ', ')"
           }
 
-  staging-instances:
-    name: "Execute Action on Staging Instances"
-    needs: staging-jobs
-    runs-on: windows-latest
+# ===============================================================================
+# Matrix ile oluşturulan sunucular için işlem gerçekleştirilir.
+# Executes the task on the servers created with the matrix.
+# ===============================================================================
+
+  execute-matrix:
+    needs: create-matrix  # Bu job'un başlaması için create-matrix'in tamamlanması gerekiyor // This job needs create-matrix to complete first.
+    runs-on: windows-latest  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
     strategy:
-      max-parallel: 1  # İşlemlerin sırayla çalışması için
+      max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır. // Prevents parallel execution, ensures tasks run sequentially.
+      # (Öncelikli olarak sıralı çalıştırma gerektiren işlemler için) // (Especially for tasks that need to be run sequentially)
       matrix:
-        environment: ${{ fromJson(needs.staging-jobs.outputs.matrix_env) }}
+        environment: ${{ fromJson(needs.create-matrix.outputs.matrix_env) }}  # Önceki job'un çıktısındaki environment değerlerini alır // Gets environment values from the output of the previous job.
     steps:
-      - name: ${{ matrix.environment }} - ${{ inputs.action }}
-        shell: pwsh
+      - name: ${{ matrix.environment }} - ${{ inputs.ACTION }}  # İşlem yapılacak hedef ortam ve işlem türü // Target environment and action type
+        shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
         run: |
-          Write-Output "Test Mode - Deploying to --- ${{ matrix.environment }} --- with action --- ${{ inputs.action }} ---"
+          Write-Output "Executing --- ${{ inputs.ACTION }} --- on --- ${{ matrix.environment }} ---"
+          
+          # Hata kontrolü için koşul ekleyin // Add condition for error handling
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Job failed on ${{ matrix.environment }}"  # Hata mesajı yazdır // Print error message
+          }
