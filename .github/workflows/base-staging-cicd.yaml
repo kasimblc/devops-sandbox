@@ -11,6 +11,10 @@ on:
         description: "Gerçekleştirilecek işlem (deploy, rollback, first-setup)"
         required: true
         type: string
+      STAGING_SERVERS:
+          description: "Deployment yapılacak staging sunucuları"
+          required: true
+          type: string  # Veya JSON array olarak da alabilirsiniz
       secrets:
         # Gerekli secret'larınızı burada tanımlayabilirsiniz.
         # Örnek: DEPLOY_TOKEN: {}
