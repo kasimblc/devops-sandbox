@@ -15,9 +15,6 @@ on:
         description: "Deployment yapılacak staging sunucuları"
         required: true
         type: string  # Veya JSON array olarak da alabilirsiniz
-  # secrets:
-      # Gerekli secret'larınızı burada tanımlayabilirsiniz.
-      # Örnek: DEPLOY_TOKEN: {}
 
 jobs:
   staging-jobs:
@@ -38,7 +35,7 @@ jobs:
           
           if ($environment -eq "all") {
             # Tüm ortamlara deploy yapılacak
-            $output = "matrix_env=" + $allowedEnvironments -join ','
+            $output = "matrix_env=" + ($allowedEnvironments -join ',')
             Write-Output "Output: $output"
             Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
