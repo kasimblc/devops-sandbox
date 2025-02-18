@@ -1,12 +1,28 @@
-name: Test Staging Pipeline
+name: Facebook Staging Pipeline
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Bu tetikleyici manuel olarak workflow'u çalıştırır
+    inputs:
+      environment:
+        description: 'Staging Environment'
+        required: true
+        default: "all"
+        type: string
+      action:
+        description: 'Action to perform'
+        required: true
+        default: "deploy"
+        type: string
+      STAGING_SERVERS:
+        description: 'List of staging servers'
+        required: true
+        type: string
+        default: '["facebook-staging-1", "facebook-staging-2"]'
 
 jobs:
   call-base:
-    uses: ./.github/workflows/base-staging-cicd.yaml
+    uses: ./.github/workflows/base-staging-cicd.yaml  # Burada dosyanın doğru yolu veriliyor
     with:
-      environment: "all"
-      action: "deploy"
-      STAGING_SERVERS: '["facebook-staging-1", "facebook-staging-2"]'
+      environment: ${{ inputs.environment }}
+      action: ${{ inputs.action }}
+      STAGING_SERVERS: ${{ inputs.STAGING_SERVERS }}
