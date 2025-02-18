@@ -23,9 +23,6 @@ jobs:
   staging-jobs:
     name: "Create Staging Matrix"
     runs-on: windows-latest
-    env:  
-      # Staging sunucularını buradan güncelleyebilirsiniz.
-      STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
     outputs:
       matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
     steps:
@@ -37,11 +34,11 @@ jobs:
           Write-Output "Using environment: $environment"
           
           # STAGING_SERVERS ortam değişkenini JSON dizisine dönüştürüyoruz.
-          $allowedEnvironments = $env:STAGING_SERVERS | ConvertFrom-Json
+          $allowedEnvironments = inputs.STAGING_SERVERS | ConvertFrom-Json
           
           if ($environment -eq "all") {
             # Tüm ortamlara deploy yapılacak
-            $output = "matrix_env=" + $env:STAGING_SERVERS
+            $output = "matrix_env=" + inputs.STAGING_SERVERS
             Write-Output "Output: $output"
             Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
