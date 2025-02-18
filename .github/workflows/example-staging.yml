@@ -5,7 +5,7 @@
 # Seçilen ortama göre bir matrix oluşturur ve ilgili sunuculara deployment yapar.
 # ===================================================================================
 
-name: Base Staging CICD
+name: Example Staging CICD
 
 on:
   workflow_dispatch:  # Manuel olarak çalıştırılabilir (el ile tetiklenebilir)
