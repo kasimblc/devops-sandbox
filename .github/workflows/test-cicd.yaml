@@ -1,0 +1,12 @@
+name: Test Staging Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  call-base:
+    uses: ./.github/workflows/base-staging-cicd.yml
+    with:
+      environment: "all"
+      action: "deploy"
+      STAGING_SERVERS: '["facebook-staging-1", "facebook-staging-2"]'
