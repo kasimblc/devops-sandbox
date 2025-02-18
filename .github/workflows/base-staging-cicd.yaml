@@ -82,7 +82,3 @@ jobs:
         run: |
           Write-Output "Executing --- ${{ inputs.ACTION }} --- on --- ${{ matrix.environment }} ---"
           
-          # Hata kontrolü için koşul ekleyin // Add condition for error handling
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "Job failed on ${{ matrix.environment }}"  # Hata mesajı yazdır // Print error message
-          }
