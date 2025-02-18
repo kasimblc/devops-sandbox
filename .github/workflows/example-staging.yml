@@ -1,30 +1,31 @@
-name: Staging Deploy 2
+name: Example Staging CiCd  # İsim değişmeli !!!
 
 on:
   workflow_dispatch:
     inputs:
       environment:
         description: >
-          Deployment Environment.
-          'all' → tüm staging deploy'ları çalışır,
-          'staging-1', 'staging-2' gibi spesifik değerler.
+          Staging Environment. 
+          'all' → Tüm staging deploy'ları çalışır,
+          yada 'staging-1', 'staging-2' gibi spesifik değerler.
         required: true
         default: "all"
         type: string
       action:
-        description: "What action would you like to perform?"
+        description: "Yapılacak işlem?"
         required: true
         default: "deploy"
         type: choice
         options:
           - deploy
           - rollback
-
+          - first-setup
+          
 jobs:
-  deploy-staging:
-    name: "Deploy Staging Environments"
+  staging-jobs:
+    name: "Staging Environments"
     runs-on: windows-latest
-    env:
+    env:  # Gerekli sunucuları burada tanımlayınız. İsim değişmeli !!!
       STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
     outputs:
       matrix_env: ${{ steps.define_matrix.outputs.matrix_env }}
@@ -54,15 +55,15 @@ jobs:
           }
 
 
-  deploy-instances:
-    needs: deploy-staging
+  staging-instances:
+    needs: staging-jobs
     runs-on: windows-latest
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır.
       matrix:
-        environment: ${{ fromJson(needs.deploy-staging.outputs.matrix_env) }}
+        environment: ${{ fromJson(needs.jobs-staging.outputs.matrix_env) }}
     steps:
-      - name: Test Deploy - ${{ matrix.environment }}
+      - name: ${{ matrix.environment }} - ${{ github.event.inputs.action }}
         shell: pwsh
         run: |
           Write-Output "Test Mode - Deploying to $($matrix.environment) with action ${{ github.event.inputs.action }}"
