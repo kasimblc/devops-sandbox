@@ -1,4 +1,4 @@
-name: Staging Deploy
+name: Deneme V1 Staging Deploy
 
 on:
   workflow_dispatch:
