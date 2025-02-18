@@ -1,8 +1,8 @@
 # ===================================================================================
 # Base CI/CD Workflow
-# Tüm firmalar için ortak CI/CD pipeline şablonu. Özel firmalar için başka YAML dosyaları oluşturulabilir ve bu base dosyayı içeri alarak kullanabilirler.
+# Firmalar için yeni YAML dosyaları oluşturulabilir ve bu tabandan kalıtım yaparak kullanabilirsin.
 # Base CI/CD Workflow
-# Common CI/CD pipeline template for all companies. Separate YAML files can be created for special companies and they can use this base file.
+# New YAML files can be created for companies and you can use them by inheriting from this base.
 # ===================================================================================
 
 name: Base CI/CD Workflow
