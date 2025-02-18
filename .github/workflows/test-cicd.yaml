@@ -5,7 +5,7 @@ on:
 
 jobs:
   call-base:
-    uses: ./.github/workflows/base-staging-cicd.yml
+    uses: ./.github/workflows/base-staging-cicd.yaml
     with:
       environment: "all"
       action: "deploy"
