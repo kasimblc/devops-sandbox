@@ -20,6 +20,11 @@ on:
           - deploy
           - rollback
           - first-setup
+      STAGING_SERVERS:
+        description: "Deployment yapılacak staging sunucuları"
+        required: true
+        default: '["staging-1", "staging-2", "staging-3"]'
+        type: string  # veya JSON array olarak alabilirsiniz
 
 jobs:
   call-base:
