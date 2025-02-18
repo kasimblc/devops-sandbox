@@ -5,7 +5,7 @@
 # Seçilen ortama göre bir matrix oluşturur ve ilgili sunuculara deployment yapar.
 # ===================================================================================
 
-name: Example Staging CICD  # !!! Example ismi değiştirilmeli
+name: Base Staging CICD
 
 on:
   workflow_dispatch:  # Manuel olarak çalıştırılabilir (el ile tetiklenebilir)
@@ -40,7 +40,7 @@ jobs:
     name: "Create Staging Matrix"
     runs-on: windows-latest
     env:  
-      # !!! STAGING_SERVERS buradaki değerler özelleştirilmeli / STAGING_SERVERS values should be customized !!!
+      # !!! STAGING_SERVERS buradaki değerler özelleştirilmeli / STAGING_SERVERS values should be customized
       # Burada tanımlanan staging sunucuları, sistemin desteklediği sunucuların listesidir.
       STAGING_SERVERS: '["staging-1", "staging-2", "staging-3", "staging-4"]'
     outputs:
