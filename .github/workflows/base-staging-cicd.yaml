@@ -34,11 +34,11 @@ jobs:
           Write-Output "Using environment: $environment"
           
           # STAGING_SERVERS ortam değişkenini JSON dizisine dönüştürüyoruz.
-          $allowedEnvironments = inputs.STAGING_SERVERS | ConvertFrom-Json
+          $allowedEnvironments = ${{ inputs.STAGING_SERVERS }} | ConvertFrom-Json
           
           if ($environment -eq "all") {
             # Tüm ortamlara deploy yapılacak
-            $output = "matrix_env=" + inputs.STAGING_SERVERS
+            $output = "matrix_env=" + $allowedEnvironments -join ','
             Write-Output "Output: $output"
             Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
           }
