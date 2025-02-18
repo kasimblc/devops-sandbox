@@ -23,7 +23,7 @@ on:
 
 jobs:
   call-base:
-    uses: ./.github/workflows/staging-base.yml
+    uses: ./.github/workflows/base-staging-cicd.yaml
     with:
       environment: ${{ github.event.inputs.environment }}
       action: ${{ github.event.inputs.action }}
