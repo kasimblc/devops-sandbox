@@ -36,6 +36,7 @@ on:
 
 jobs:
   checkout-download:
+    name: "Checkout && Download"
     runs-on: windows-latest
     steps:
       - name: Checkout Deploy Repository
@@ -98,6 +99,7 @@ jobs:
 
   execute-matrix:
     needs: create-matrix  # Bu job'un başlaması için create-matrix'in tamamlanması gerekiyor // This job needs create-matrix to complete first.
+    name: "Matrix"
     runs-on: windows-latest  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır. // Prevents parallel execution, ensures tasks run sequentially.
