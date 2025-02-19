@@ -27,6 +27,11 @@ on:
         required: true
         default: '["staging-1", "staging-2", "staging-3"]'
         type: string
+      DOWNLOAD_ARTIFACT:
+        description: "Artifact Download ? Rollback gibi gerek duyulmadığında artifact indirme işlemi atlanarak daha hızlı işlemler gerçekleşebilir." # Artifact indirilsin mi
+        required: true
+        type: boolean
+        default: true
 
 # =========================
 # Base Staging İş Akışını Çağırma
@@ -39,3 +44,4 @@ jobs:
       ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT }}  # Kullanıcıdan alınan ortam değeri // Environment value from user
       ACTION: ${{ github.event.inputs.ACTION }}  # Kullanıcıdan alınan işlem değeri // Action value from user
       TARGET_SERVERS: ${{ github.event.inputs.TARGET_SERVERS }}  # Kullanıcıdan alınan sunucu listesi // Server list from user
+      DOWNLOAD_ARTIFACT: ${{ github.event.inputs.DOWNLOAD_ARTIFACT }}
