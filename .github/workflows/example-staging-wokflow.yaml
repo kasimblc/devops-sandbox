@@ -39,6 +39,7 @@ on:
 
 jobs:
   call_base_workflow:
+    name: "Call Base Workflow"
     uses: kasimblc/devops-sandbox/.github/workflows/base-workflow.yaml@main  # Base iş akışını kullanır // Uses the base workflow
     with:
       ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT }}  # Kullanıcıdan alınan ortam değeri // Environment value from user
