@@ -5,7 +5,7 @@
 # New YAML files can be created for companies and you can use them by inheriting from this base.
 # ===================================================================================
 
-name: Base CI/CD Workflow
+name: Base Workflow
 
 on:
   workflow_call:  # Başka YAML dosyaları bunu çağırarak içeri alabilir // Other YAML files can include this by calling it
@@ -24,8 +24,8 @@ on:
         default: '["server-1", "server-2", "server-3"]'  # Varsayılan hedef sunucular // Default target servers
       DOWNLOAD_ARTIFACT:
         required: true
-        type: boolean
-        default: true
+        type: string  # Boolean yerine string kullanılacak
+        default: "true"  # Varsayılan olarak "true" seçeneği seçilir
 
 # ====================================================================
 # Workflow Matrix Oluşturma
@@ -49,7 +49,7 @@ jobs:
           Write-Output "Checkout Base Repository"
 
       - name: Download Artifact
-        if: ${{ inputs.DOWNLOAD_ARTIFACT }}
+        if: ${{ github.event.inputs.DOWNLOAD_ARTIFACT == 'true' }}
         shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
         run: |
           Write-Output "Download Artifact"
