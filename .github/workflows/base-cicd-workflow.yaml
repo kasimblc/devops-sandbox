@@ -22,6 +22,10 @@ on:
         required: true  # Hedef sunucuların listesi zorunludur // List of target servers is mandatory
         type: string
         default: '["server-1", "server-2", "server-3"]'  # Varsayılan hedef sunucular // Default target servers
+      DOWNLOAD_ARTIFACT:
+        required: true
+        type: boolean
+        default: true
 
 # ====================================================================
 # Workflow Matrix Oluşturma
@@ -31,7 +35,27 @@ on:
 # ====================================================================
 
 jobs:
+  checkout-download:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Deploy Repository
+        shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
+        run: |
+          Write-Output "Checkout Deploy Repository"
+
+      - name: Checkout Base Repository
+        shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
+        run: |
+          Write-Output "Checkout Base Repository"
+
+      - name: Download Artifact
+        if: ${{ inputs.DOWNLOAD_ARTIFACT }}
+        shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
+        run: |
+          Write-Output "Download Artifact"
+
   create-matrix:
+    needs: checkout-download
     name: "Create Matrix"
     runs-on: windows-latest  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
     outputs:
@@ -43,25 +67,29 @@ jobs:
         id: define_matrix
         shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
         run: |
-          $environment = "all"  # Kullanıcıdan alınan environment değerini al // Get the environment value from the user
-          $allowedEnvironments = @("staging-1", "staging-2", "staging-3")  # JSON dizisine dönüştür // Convert to JSON array
+          # Kullanıcıdan alınan ortam değişkenleri (inputs üzerinden)
+          $environment = "${{ inputs.ENVIRONMENT }}"  # Kullanıcıdan gelen ortam bilgisi // Environment value from user
+          $allowedEnvironments = '${{ inputs.TARGET_SERVERS }}' | ConvertFrom-Json  # JSON string olarak gelen değeri diziye çevir // Convert input string to array
           
           if ($environment -eq "all") {
-            # Tüm ortamlar için işlem uygulanır // Apply to all environments
-            $output = "matrix_env=" + ($allowedEnvironments | ConvertTo-Json -Compress)
-            Write-Output "Output: $output"
-            Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
+            # "all" seçilmişse tüm ortamlar seçilir // If "all" is selected, all environments will be included
+            $matrix = $allowedEnvironments | ConvertTo-Json -Compress
           }
           elseif ($allowedEnvironments -contains $environment) {
-            # Belirtilen ortama işlem uygulanır // Apply to a specific environment
-            $output = "matrix_env=[" + '"' + $environment + '"' + "]"
-            Write-Output "Output: $output"
-            Out-File -FilePath $env:GITHUB_OUTPUT -InputObject $output -Append
+            # Belirtilen tek bir ortam seçilmişse onu matrise ekle // If a single environment is selected, add it to matrix
+            $matrix = '["' + $environment + '"]'
           }
           else {
-            # Geçersiz ortamlar için hata kontrolü // Error handling for invalid environments
-            Write-Error "Invalid environment: $environment. Allowed values are 'all' or one of: $($allowedEnvironments -join ', ')"
+            # Geçersiz ortamlar için hata mesajı göster // Show error message for invalid environments
+            Write-Error " Invalid environment: '$environment'. Allowed values are 'all' or one of: $($allowedEnvironments -join ', ')"
+            exit 1  # CI/CD'nin başarısız olması için çıkış kodu gönder // Exit with error code to fail the CI/CD
           }
+
+          # Matris çıktısını GitHub Actions değişkenlerine yazdır // Write matrix output to GitHub Actions variables
+          "matrix_env=$matrix" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+          # Debug amaçlı çıktıyı göster // Show output for debugging
+          Write-Output " Matrix Generated: $matrix"
 
 # ===============================================================================
 # Matrix ile oluşturulan sunucular için işlem gerçekleştirilir.
