@@ -1,9 +1,9 @@
 # =========================
-# Deploy to Staging Workflow
+# Example CI/CD to Staging Workflow
 # CI/CD iş akışı
 # =========================
 
-name: Deploy to Staging
+name: Example CI/CD to Staging
 
 on:
   workflow_dispatch:
