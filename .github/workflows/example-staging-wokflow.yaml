@@ -28,7 +28,7 @@ on:
         default: '["staging-1", "staging-2", "staging-3"]'
         type: string
       DOWNLOAD_ARTIFACT:
-        description: "Artifact Download?    Rollback gibi gerek duyulmadığında artifact indirme işlemi atlanarak daha hızlı işlemler gerçekleşebilir." # Artifact indirilsin mi
+        description: "Artifact indirilsin mi? Gerek yoksa işlem hızlanır." # Artifact indirilsin mi
         required: true
         type: boolean
         default: true
