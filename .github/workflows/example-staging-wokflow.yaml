@@ -3,7 +3,7 @@
 # CI/CD iş akışı
 # =========================
 
-name: Example CI/CD to Staging
+name: Example Workflow Staging
 
 on:
   workflow_dispatch:
