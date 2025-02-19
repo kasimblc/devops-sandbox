@@ -39,7 +39,7 @@ on:
 
 jobs:
   call_base_workflow:
-    uses: ./.github/workflows/base-staging-cicd.yaml  # Base iş akışını kullanır // Uses the base workflow
+    uses: ./.github/workflows/base-workflow.yaml  # Base iş akışını kullanır // Uses the base workflow
     with:
       ENVIRONMENT: ${{ github.event.inputs.ENVIRONMENT }}  # Kullanıcıdan alınan ortam değeri // Environment value from user
       ACTION: ${{ github.event.inputs.ACTION }}  # Kullanıcıdan alınan işlem değeri // Action value from user
