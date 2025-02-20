@@ -21,7 +21,7 @@ on:
       TARGET_SERVERS:
         required: true  # Hedef sunucuların listesi zorunludur // List of target servers is mandatory
         type: string
-        default: '["server-1", "server-2", "server-3"]'  # Varsayılan hedef sunucular // Default target servers
+        default: '["server-1","server-2","server-3"]'  # Varsayılan hedef sunucular // Default target servers
       DOWNLOAD_ARTIFACT:
         required: true
         type: string  # Boolean yerine string kullanılacak

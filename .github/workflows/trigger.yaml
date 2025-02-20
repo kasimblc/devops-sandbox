@@ -10,7 +10,7 @@ on:
       TARGET_SERVERS:
         description: "Servers List"
         required: true
-        default: '["example-1-staging", "example-2-staging", "example-3-staging"]'
+        default: '["example-1-staging","example-2-staging","example-3-staging"]'
         type: string
 
 # =========================
