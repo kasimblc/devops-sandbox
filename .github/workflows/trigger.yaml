@@ -12,5 +12,5 @@ jobs:
     with:
       ENVIRONMENT: "all"
       ACTION: "deploy"
-      TARGET_SERVERS: '["firma-1-staging-1","firma-2-staging-1","firma-3-staging-1","firma-3-staging-2"]' }}
+      TARGET_SERVERS: '["firma-1-staging-1","firma-2-staging-1","firma-3-staging-1","firma-3-staging-2"]'
       DOWNLOAD_ARTIFACT: "true"
