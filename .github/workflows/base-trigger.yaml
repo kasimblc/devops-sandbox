@@ -3,7 +3,7 @@ name: Base Weekly Staging Trigger
 # Base tarafından bütün suncular için istediğimizi tetiklemek adına kullanılabilir.
 on:
 #  schedule:
-#    - cron: "*/20 * * * *"
+#    - cron: "0 0 1 * *"
   workflow_dispatch:  # Manuel çalıştırma seçeneği
   
 # !!! repo ve example-staging-wokflow.yaml@main isimleri doğru ayarlanmalı.
