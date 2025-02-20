@@ -70,19 +70,19 @@ jobs:
         run: |
           # Kullanıcıdan alınan ortam değişkenleri (inputs üzerinden)
           $environment = "${{ inputs.ENVIRONMENT }}"  # Kullanıcıdan gelen ortam bilgisi // Environment value from user
-          $allowedEnvironments = '${{ inputs.TARGET_SERVERS }}' | ConvertFrom-Json  # JSON string olarak gelen değeri diziye çevir // Convert input string to array
+          $allowedEnvironments = '${{ inputs.TARGET_SERVERS }}' # JSON string olarak gelen değeri diziye çevir // Convert input string to array
           
           if ($environment -eq "all") {
             # "all" seçilmişse tüm ortamlar seçilir // If "all" is selected, all environments will be included
-            $matrix = $allowedEnvironments | ConvertTo-Json -Compress -Depth 1
+            $matrix = $allowedEnvironments
           }
           elseif ($allowedEnvironments -contains $environment) {
             # Belirtilen tek bir ortam seçilmişse onu matrise ekle // If a single environment is selected, add it to matrix
-            $matrix = @($environment) | ConvertTo-Json -Compress -Depth 1
+            $matrix = '["' + $environment + '"]'
           }
           else {
             # Geçersiz ortamlar için hata mesajı göster // Show error message for invalid environments
-            Write-Error "Invalid environment: '$environment'. Allowed values are 'all' or one of: $($allowedEnvironments -join ', ')"
+            Write-Error " Invalid environment: '$environment'. Allowed values are 'all' or one of: $($allowedEnvironments -join ', ')"
             exit 1  # CI/CD'nin başarısız olması için çıkış kodu gönder // Exit with error code to fail the CI/CD
           }
 
@@ -90,7 +90,7 @@ jobs:
           "matrix_env=$matrix" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
           # Debug amaçlı çıktıyı göster // Show output for debugging
-          Write-Output "Matrix Generated: $matrix"
+          Write-Output " Matrix Generated: $matrix"
 
 # ===============================================================================
 # Matrix ile oluşturulan sunucular için işlem gerçekleştirilir.
