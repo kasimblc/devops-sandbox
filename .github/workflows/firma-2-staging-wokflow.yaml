@@ -1,8 +1,3 @@
-# =========================
-# Example CI/CD to Staging Workflow
-# CI/CD iş akışı
-# =========================
-
 name: Firma-2 Staging Workflow
 
 # !!! TARGET_SERVERS gerekli server isimleri ile değiştirilmeli.
@@ -34,10 +29,7 @@ on:
         type: boolean
         default: true
 
-# =========================
 # Base İş Akışını Çağırma
-# =========================
-
 jobs:
   call_base_workflow:
     name: "Call Base Workflow"
