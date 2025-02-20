@@ -1,38 +1,37 @@
 # =========================
-# Example CI/CD to Staging Workflow
+# Example CI/CD to Production Workflow
 # CI/CD iş akışı
 # =========================
 
-name: Example 3 Staging Workflow
+name: Firma-3 Production Workflow
 
 # !!! TARGET_SERVERS gerekli server isimleri ile değiştirilmeli.
 on:
   workflow_dispatch:
     inputs:
       # ENVIRONMENT:  # Ortam bilgisi // Environment info
-      #  description: "Staging Environment ('all' for all servers or specific server like 'staging-1')" # Staging Ortamı ('all' tüm sunucular veya 'staging-1' gibi belirli bir sunucu için)
+      #  description: "Production Environment ('all' for all servers or specific server like 'Production-1')" # Production Ortamı ('all' tüm sunucular veya 'Production-1' gibi belirli bir sunucu için)
       #  required: true
       #  default: "all"
       #  type: string
       ACTION:  # Gerçekleştirilecek işlem // Action to perform
-        description: "Action to perform (deploy, rollback, first-setup)" # Gerçekleştirilecek işlem (deploy, rollback, first-setup)
+        description: "Action to perform (deploy, rollback)" # Gerçekleştirilecek işlem (deploy, rollback, first-setup)
         required: true
         default: "deploy"
         type: choice
         options:
           - deploy  # Dağıtım işlemi // Deployment action
           - rollback  # Geri alma işlemi // Rollback action
-          - first-setup  # İlk kurulum işlemi // First setup action
       TARGET_SERVERS:  # Dağıtım yapılacak sunucular // Servers to deploy to
         description: "Sunucu Listesi: İsteğe bağlı olarak değiştirilebilir; belirtilen sunucular çalıştırılır ya da varsayılan liste kullanılır." # Dağıtım yapılacak sunucular
         required: true
-        default: '["example-staging-1","example-staging-2"]'
+        default: '["firma-3-Production-1","firma-3-Production-2","firma-3-Batch-1"]'
         type: string
       DOWNLOAD_ARTIFACT:
         description: "Artifact indirilsin mi? Gerek yoksa işlem hızlanır." # Artifact indirilsin mi
         required: true
         type: boolean
-        default: true
+        default: false
 
 # =========================
 # Base İş Akışını Çağırma
