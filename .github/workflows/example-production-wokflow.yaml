@@ -1,0 +1,48 @@
+# =========================
+# Example CI/CD to Production Workflow
+# CI/CD iş akışı
+# =========================
+
+name: Example Production Workflow
+
+# !!! TARGET_SERVERS gerekli server isimleri ile değiştirilmeli.
+on:
+  workflow_dispatch:
+    inputs:
+      # ENVIRONMENT:  # Ortam bilgisi // Environment info
+      #  description: "Production Environment ('all' for all servers or specific server like 'Production-1')" # Production Ortamı ('all' tüm sunucular veya 'Production-1' gibi belirli bir sunucu için)
+      #  required: true
+      #  default: "all"
+      #  type: string
+      ACTION:  # Gerçekleştirilecek işlem // Action to perform
+        description: "Action to perform (deploy, rollback)" # Gerçekleştirilecek işlem (deploy, rollback, first-setup)
+        required: true
+        default: "deploy"
+        type: choice
+        options:
+          - deploy  # Dağıtım işlemi // Deployment action
+          - rollback  # Geri alma işlemi // Rollback action
+      TARGET_SERVERS:  # Dağıtım yapılacak sunucular // Servers to deploy to
+        description: "Sunucu Listesi: İsteğe bağlı olarak değiştirilebilir; belirtilen sunucular çalıştırılır ya da varsayılan liste kullanılır." # Dağıtım yapılacak sunucular
+        required: true
+        default: '["example-Production-1" ,"example-Production-2", "example-Batch-1"]'
+        type: string
+      DOWNLOAD_ARTIFACT:
+        description: "Artifact indirilsin mi? Gerek yoksa işlem hızlanır." # Artifact indirilsin mi
+        required: true
+        type: boolean
+        default: false
+
+# =========================
+# Base İş Akışını Çağırma
+# =========================
+
+jobs:
+  call_base_workflow:
+    name: "Call Base Workflow"
+    uses: kasimblc/devops-sandbox/.github/workflows/base-workflow.yaml@main  # Base iş akışını kullanır // Uses the base workflow
+    with:
+      ENVIRONMENT: "all" # ${{ github.event.inputs.ENVIRONMENT }}   Kullanıcıdan alınan ortam değeri // Environment value from user
+      ACTION: ${{ github.event.inputs.ACTION }}  # Kullanıcıdan alınan işlem değeri // Action value from user
+      TARGET_SERVERS: ${{ github.event.inputs.TARGET_SERVERS }}  # Kullanıcıdan alınan sunucu listesi // Server list from user
+      DOWNLOAD_ARTIFACT: ${{ github.event.inputs.DOWNLOAD_ARTIFACT == 'true' }}

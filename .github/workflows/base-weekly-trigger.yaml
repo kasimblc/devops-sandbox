@@ -1,0 +1,22 @@
+# Base tarafından bütün suncular için istediğimizi tetiklemek adına kullanılabilir.
+name: Base Weekly Staging Trigger
+
+# Base tarafından bütün suncular için istediğimizi tetiklemek adına kullanılabilir.
+on:
+  schedule:
+    - cron: "*/5 * * * *" # Her 5 dakikada bir çalıştır
+  workflow_dispatch:  # Manuel çalıştırma seçeneği
+  
+# !!! repo ve example-staging-wokflow.yaml@main isimleri doğru ayarlanmalı.
+jobs:
+  trigger-staging-1:
+    name: "Trigger Staging Workflow - 1"
+    uses: kasimblc/devops-sandbox/.github/workflows/example-1-staging-wokflow.yaml@main@main
+
+  trigger-staging-2:
+    name: "Trigger Staging Workflow - 2"
+    uses: kasimblc/devops-sandbox/.github/workflows/example-2-staging-wokflow.yaml@main@main
+
+  trigger-staging-3:
+    name: "Trigger Staging Workflow - 3"
+    uses: kasimblc/devops-sandbox/.github/workflows/example-3-staging-wokflow.yaml@main@main
