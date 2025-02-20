@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Staging Workflow - 1
-        run: gh workflow run example-1-staging-wokflow.yaml --repo kasimblc/devops-sandbox
+        run: gh workflow run firma-1-staging-wokflow.yaml --repo kasimblc/devops-sandbox
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Staging Workflow - 2
-        run: gh workflow run example-2-staging-wokflow.yaml --repo kasimblc/devops-sandbox
+        run: gh workflow run firma-2-staging-wokflow.yaml --repo kasimblc/devops-sandbox
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -28,6 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Staging Workflow - 3
-        run: gh workflow run example-3-staging-wokflow.yaml --repo kasimblc/devops-sandbox
+        run: gh workflow run firma-3-staging-wokflow.yaml --repo kasimblc/devops-sandbox
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
