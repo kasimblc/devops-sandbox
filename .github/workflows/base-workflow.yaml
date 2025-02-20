@@ -70,11 +70,11 @@ jobs:
         run: |
           # Kullanıcıdan alınan ortam değişkenleri (inputs üzerinden)
           $environment = "${{ inputs.ENVIRONMENT }}"  # Kullanıcıdan gelen ortam bilgisi // Environment value from user
-          $allowedEnvironments = '${{ inputs.TARGET_SERVERS }}' | ConvertFrom-Json  # JSON string olarak gelen değeri diziye çevir // Convert input string to array
+          $allowedEnvironments = '${{ inputs.TARGET_SERVERS }}' | ConvertTo-Json -Compress -Depth 1  # JSON string olarak gelen değeri diziye çevir // Convert input string to array
           
           if ($environment -eq "all") {
             # "all" seçilmişse tüm ortamlar seçilir // If "all" is selected, all environments will be included
-            $matrix = $allowedEnvironments | ConvertTo-Json -Compress -Depth 1
+            $matrix = $allowedEnvironments | ConvertTo-Json -Compress
           }
           elseif ($allowedEnvironments -contains $environment) {
             # Belirtilen tek bir ortam seçilmişse onu matrise ekle // If a single environment is selected, add it to matrix
