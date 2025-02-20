@@ -1,29 +1,16 @@
-# Aynı sunucuda bulunan farklı firamalar ortak repoda olduğu zaman 
 name: Weekly Staging Trigger
 
-# !!! TARGET_SERVERS gerekli server isimleri ile değiştirilmeli.
 on:
   schedule:
     - cron: "*/20 * * * *"
   workflow_dispatch:
-    inputs:
-      TARGET_SERVERS:
-        description: "Servers List"
-        required: true
-        default: '["firma-1-staging-1","firma-2-staging-1","firma-3-staging-1,firma-3-staging-2"]'
-        type: string
-
-# =========================
-# Base İş Akışını Çağırma
-# =========================
 
 jobs:
   call_base_workflow:
     name: "Call Base Workflow"
-    uses: kasimblc/devops-sandbox/.github/workflows/base-workflow.yaml@main  # Base iş akışını kullanır // Uses the base workflow
+    uses: kasimblc/devops-sandbox/.github/workflows/base-workflow.yaml@main
     with:
-      ENVIRONMENT: "all"  # Varsayılan olarak tüm ortamlar // Default to all environments
-      ACTION: "deploy"  # Varsayılan olarak deploy işlemi // Default to deploy action
-      TARGET_SERVERS: ${{ github.event.inputs.TARGET_SERVERS }}  # Kullanıcıdan alınan sunucu listesi // Server list from user
-      DOWNLOAD_ARTIFACT: "true"  # Varsayılan olarak artifact indir // Default to downloading artifact
-
+      ENVIRONMENT: "all"
+      ACTION: "deploy"
+      TARGET_SERVERS: '["firma-1-staging-1","firma-2-staging-1","firma-3-staging-1","firma-3-staging-2"]' }}
+      DOWNLOAD_ARTIFACT: "true"
