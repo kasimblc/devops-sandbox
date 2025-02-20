@@ -74,7 +74,7 @@ jobs:
           
           if ($environment -eq "all") {
             # "all" seçilmişse tüm ortamlar seçilir // If "all" is selected, all environments will be included
-            $matrix = $allowedEnvironments | ConvertTo-Json -Compress
+            $matrix = $allowedEnvironments | ConvertTo-Json -Compress -Depth 1
           }
           elseif ($allowedEnvironments -contains $environment) {
             # Belirtilen tek bir ortam seçilmişse onu matrise ekle // If a single environment is selected, add it to matrix
