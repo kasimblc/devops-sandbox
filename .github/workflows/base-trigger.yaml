@@ -1,0 +1,33 @@
+name: Base Weekly Staging Trigger
+
+# Base tarafından bütün suncular için istediğimizi tetiklemek adına kullanılabilir.
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch:  # Manuel çalıştırma seçeneği
+  
+# !!! repo ve example-staging-wokflow.yaml@main isimleri doğru ayarlanmalı.
+jobs:
+  trigger-staging-1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Staging Workflow - 1
+        run: gh workflow run example-1-staging-wokflow.yaml --repo kasimblc/devops-sandbox
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  trigger-staging-2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Staging Workflow - 2
+        run: gh workflow run example-2-staging-wokflow.yaml --repo kasimblc/devops-sandbox
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  trigger-staging-3:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Staging Workflow - 3
+        run: gh workflow run example-3-staging-wokflow.yaml --repo kasimblc/devops-sandbox
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

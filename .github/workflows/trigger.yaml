@@ -4,7 +4,7 @@ name: Weekly Staging Trigger
 # !!! TARGET_SERVERS gerekli server isimleri ile değiştirilmeli.
 on:
   schedule:
-    - cron: "*/5 * * * *" # Her 5 dakikada bir çalıştır
+    - cron: "*/20 * * * *"
   workflow_dispatch:
     inputs:
       TARGET_SERVERS:
