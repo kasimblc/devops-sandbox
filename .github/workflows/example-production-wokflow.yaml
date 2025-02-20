@@ -25,7 +25,7 @@ on:
       TARGET_SERVERS:  # Dağıtım yapılacak sunucular // Servers to deploy to
         description: "Sunucu Listesi: İsteğe bağlı olarak değiştirilebilir; belirtilen sunucular çalıştırılır ya da varsayılan liste kullanılır." # Dağıtım yapılacak sunucular
         required: true
-        default: '["example-Production-1" ,"example-Production-2", "example-Batch-1"]'
+        default: '["example-Production-1"]'
         type: string
       DOWNLOAD_ARTIFACT:
         description: "Artifact indirilsin mi? Gerek yoksa işlem hızlanır." # Artifact indirilsin mi
