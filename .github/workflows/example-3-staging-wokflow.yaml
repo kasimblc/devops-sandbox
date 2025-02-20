@@ -3,7 +3,7 @@
 # CI/CD iş akışı
 # =========================
 
-name: Example Staging Workflow
+name: Example 3 Staging Workflow
 
 # !!! TARGET_SERVERS gerekli server isimleri ile değiştirilmeli.
 on:
