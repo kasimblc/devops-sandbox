@@ -26,6 +26,10 @@ on:
         required: true
         type: string  # Boolean yerine string kullanılacak
         default: "true"  # Varsayılan olarak "true" seçeneği seçilir
+      CONFIG_FILE_NAME:
+        required: true
+        default: "arguments.yaml"
+        type: string
 
 # ====================================================================
 # Workflow Matrix Oluşturma
@@ -110,5 +114,5 @@ jobs:
       - name: ${{ matrix.environment }} - ${{ inputs.ACTION }}  # İşlem yapılacak hedef ortam ve işlem türü // Target environment and action type
         shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
         run: |
-          Write-Output "Executing --- ${{ inputs.ACTION }} --- on --- ${{ matrix.environment }} ---"
+          Write-Output "Executing --- ${{ inputs.ACTION }} --- on --- ${{ matrix.environment }} --- ${{ inputs.CONFIG_FILE_NAME }} ---"
           

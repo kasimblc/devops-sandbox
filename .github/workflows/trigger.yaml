@@ -7,10 +7,21 @@ on:
 
 jobs:
   call_base_workflow:
-    name: "Call Base Workflow"
+    name: "Call Base Workflow 1"
     uses: kasimblc/devops-sandbox/.github/workflows/base-workflow.yaml@main
     with:
       ENVIRONMENT: "all"
       ACTION: "deploy"
       TARGET_SERVERS: '["firma-1-staging-1","firma-2-staging-1","firma-3-staging-1","firma-3-staging-2"]'
       DOWNLOAD_ARTIFACT: "true"
+      CONFIG_FILE_NAME: "arguments_1.yaml"
+
+    call_base_workflow:
+    name: "Call Base Workflow 2"
+    uses: kasimblc/devops-sandbox/.github/workflows/base-workflow.yaml@main
+    with:
+      ENVIRONMENT: "all"
+      ACTION: "deploy"
+      TARGET_SERVERS: '["firma-1-staging-1"]'
+      DOWNLOAD_ARTIFACT: "true"
+      CONFIG_FILE_NAME: "arguments_2.yaml"

@@ -27,7 +27,11 @@ on:
         required: true
         type: boolean
         default: false
-
+      CONFIG_FILE_NAME:
+        description: "Argümanları tanımladığımız konfig dosyasının ADI." # Argümanları tanımladığımız konfig dosyasının adını vereceğiz.
+        required: true
+        default: "arguments.yaml"
+        type: string
 
 # Base İş Akışını Çağırma
 jobs:
@@ -39,3 +43,4 @@ jobs:
       ACTION: ${{ github.event.inputs.ACTION }}  # Kullanıcıdan alınan işlem değeri // Action value from user
       TARGET_SERVERS: ${{ github.event.inputs.TARGET_SERVERS }}  # Kullanıcıdan alınan sunucu listesi // Server list from user
       DOWNLOAD_ARTIFACT: ${{ github.event.inputs.DOWNLOAD_ARTIFACT == 'true' }}
+      CONFIG_FILE_NAME: ${{ github.event.inputs.CONFIG_FILE_NAME }}
