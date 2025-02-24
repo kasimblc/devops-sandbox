@@ -16,7 +16,7 @@ jobs:
       DOWNLOAD_ARTIFACT: "true"
       CONFIG_FILE_NAME: "arguments_1.yaml"
 
-    call_base_workflow:
+  call_base_workflow:
     name: "Call Base Workflow 2"
     uses: kasimblc/devops-sandbox/.github/workflows/base-workflow.yaml@main
     with:
