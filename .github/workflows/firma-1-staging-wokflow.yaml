@@ -32,7 +32,7 @@ on:
         description: "Artifact indirilsin mi? Gerek yoksa işlem hızlanır." # Artifact indirilsin mi
         required: true
         type: boolean
-        default: false    
+        default: true    
 
 # Base İş Akışını Çağırma
 jobs:
