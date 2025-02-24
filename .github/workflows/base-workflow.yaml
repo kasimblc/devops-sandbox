@@ -41,12 +41,12 @@ on:
 jobs:
   checkout-download:
     name: "Checkout && Download"
-    runs-on: windows-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout Deploy Repository
-        shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
-        run: |
-          Write-Output "Checkout Deploy Repository"
+        uses: actions/checkout@v4
+        with:
+          clean: true
 
       - name: Checkout Base Repository
         shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
@@ -114,5 +114,4 @@ jobs:
       - name: ${{ matrix.environment }} - ${{ inputs.ACTION }}  # İşlem yapılacak hedef ortam ve işlem türü // Target environment and action type
         shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
         run: |
-          Write-Output "Executing --- ${{ inputs.ACTION }} --- on --- ${{ matrix.environment }} --- ${{ inputs.CONFIG_FILE_NAME }} ---"
-          
+          .\scripts\operationController.ps1 -serverId "matrix.environment"

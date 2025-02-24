@@ -1,0 +1,71 @@
+  # Setup Tanımı
+  setup:
+    servers:
+      - id: "setup"
+        name: "Setup Environment"
+        args:
+          SourcePath: "ShopExpressWebApp"
+          Backup: "N"
+          RollBack: "N"
+          CheckSite: "N"
+          SleepTime: "30"
+          Environment: "setup"
+
+  # Staging Tanımları
+  staging:
+    defaults: &defaultStaging
+      args:
+        ProjectPath: "C:\\Projects"
+        SourcePath: "ShopExpressWebApp"
+        Backup: "Y"
+        RollBack: "Y"
+        CheckSite: "Y"
+        SleepTime: "90"
+        Environment: "staging"
+
+    servers:
+      - id: "staging-1"
+        <<: *defaultStaging
+        args:
+          FolderName: "staging.example.com.tr"
+          SiteUrl: "https://staging.example.com.tr"
+
+      - id: "staging-2"
+        <<: *defaultStaging
+        args:
+          FolderName: "staging.example-2.com.tr"
+          SiteUrl: "https://staging.example-2.com.tr"
+
+  # Prod Tanımları
+  prod:
+    defaults: &defaultProd
+      args:
+        SourcePath: "C:\Projects\staging.example.com.tr"
+        Backup: "Y"
+        RollBack: "Y"
+        CheckSite: "Y"
+        SleepTime: "60"
+        Environment: "production"
+
+    servers:
+      - id: "prod-1"
+        <<: *defaultProd
+        args:
+          ProjectPath: "X:\\Projects"
+          FolderName: "example.com.tr"
+          SiteUrl: "https://example.com.tr"
+
+      - id: "prod-2"
+        <<: *defaultProd
+        args:
+          ProjectPath: "Z:\\Projects"
+          FolderName: "example-2.com.tr"
+          SiteUrl: "https://example-2.com.tr"
+
+      - id: "batch-1"
+        <<: *defaultProd
+        args:
+          ProjectPath: "ZZ:\\Projects"
+          FolderName: "example-batch.com.tr"
+          CheckSite: "N"  # Bu sunucu için CheckSite değeri değiştirildi.
+          SiteUrl: "None" # SiteUrl tamamen kaldırıldı.

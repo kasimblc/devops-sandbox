@@ -20,7 +20,7 @@ on:
       TARGET_SERVERS:  # Dağıtım yapılacak sunucular // Servers to deploy to
         description: "Sunucu Listesi: İsteğe bağlı olarak değiştirilebilir; belirtilen sunucular çalıştırılır ya da varsayılan liste kullanılır." # Dağıtım yapılacak sunucular
         required: true
-        default: '["firma-2-Production-1","firma-2-Production-2","firma-2-Batch-1"]'
+        default: '["firma-2-production-1","firma-2-production-2","firma-2-batch-1"]'
         type: string
       DOWNLOAD_ARTIFACT:
         description: "Artifact indirilsin mi? Gerek yoksa işlem hızlanır." # Artifact indirilsin mi
@@ -30,7 +30,7 @@ on:
       CONFIG_FILE_NAME:
         description: "Argümanları tanımladığımız konfig dosyasının ADI." # Argümanları tanımladığımız konfig dosyasının adını vereceğiz.
         required: true
-        default: "arguments.yaml"
+        default: "arguments.ps1"
         type: string
 
 # Base İş Akışını Çağırma

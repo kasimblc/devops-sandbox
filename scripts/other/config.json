@@ -1,0 +1,97 @@
+{
+    "setup": {
+      "servers": [
+        {
+          "id": "setup",
+          "name": "Setup Environment",
+          "args": {
+            "SourcePath": "ShopExpressWebApp",
+            "Backup": "N",
+            "RollBack": "N",
+            "CheckSite": "N",
+            "SleepTime": "30",
+            "Environment": "setup"
+          }
+        }
+      ]
+    },
+    "staging": {
+      "servers": [
+        {
+          "id": "staging-1",
+          "args": {
+            "ProjectPath": "C:\\Projects",
+            "SourcePath": "ShopExpressWebApp",
+            "Backup": "Y",
+            "RollBack": "Y",
+            "CheckSite": "Y",
+            "SleepTime": "90",
+            "Environment": "staging",
+            "FolderName": "staging.example.com.tr",
+            "SiteUrl": "https://staging.example.com.tr"
+          }
+        },
+        {
+          "id": "staging-2",
+          "args": {
+            "ProjectPath": "C:\\Projects",
+            "SourcePath": "ShopExpressWebApp",
+            "Backup": "Y",
+            "RollBack": "Y",
+            "CheckSite": "Y",
+            "SleepTime": "90",
+            "Environment": "staging",
+            "FolderName": "staging.example-2.com.tr",
+            "SiteUrl": "https://staging.example-2.com.tr"
+          }
+        }
+      ]
+    },
+    "prod": {
+      "servers": [
+        {
+          "id": "prod-1",
+          "args": {
+            "ProjectPath": "X:\\Projects",
+            "SourcePath": "C:\\Projects\\staging.example.com.tr",
+            "Backup": "Y",
+            "RollBack": "Y",
+            "CheckSite": "Y",
+            "SleepTime": "60",
+            "Environment": "production",
+            "FolderName": "example.com.tr",
+            "SiteUrl": "https://example.com.tr"
+          }
+        },
+        {
+          "id": "prod-2",
+          "args": {
+            "ProjectPath": "Z:\\Projects",
+            "SourcePath": "C:\\Projects\\staging.example.com.tr",
+            "Backup": "Y",
+            "RollBack": "Y",
+            "CheckSite": "Y",
+            "SleepTime": "60",
+            "Environment": "production",
+            "FolderName": "example-2.com.tr",
+            "SiteUrl": "https://example-2.com.tr"
+          }
+        },
+        {
+          "id": "batch-1",
+          "args": {
+            "ProjectPath": "ZZ:\\Projects",
+            "SourcePath": "C:\\Projects\\staging.example.com.tr",
+            "Backup": "Y",
+            "RollBack": "Y",
+            "CheckSite": "N",
+            "SleepTime": "60",
+            "Environment": "production",
+            "FolderName": "example-batch.com.tr",
+            "SiteUrl": "None"
+          }
+        }
+      ]
+    }
+  }
+  
