@@ -119,7 +119,16 @@ jobs:
         shell: pwsh
         run: |
           Write-Output "Geçerli Çalışma Dizini:"
-          Get-Location  # Windows için
-          $PWD          # Linux/macOS için alternatif
-
+          Get-Location
+          Write-Output $PWD
+      
+          Write-Output "scripts klasörüne geçiliyor..."
+          Set-Location -Path "$PWD/scripts"
+      
+          Write-Output "scripts dizinindeki dosyalar:"
+          Get-ChildItem -Path "$PWD"
+      
+          # operationController.ps1 dosyasını argümanla çalıştırıyoruz
+          Write-Output "operationController.ps1 dosyası çalıştırılıyor..."
+          .\operationController.ps1 -serverId "firma-1-staging-1"
 
