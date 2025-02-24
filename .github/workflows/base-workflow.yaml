@@ -118,7 +118,7 @@ jobs:
       - name: ${{ matrix.environment }} - ${{ inputs.ACTION }}  # İşlem yapılacak hedef ortam ve işlem türü // Target environment and action type
         run: |
           Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-          .\scripts\operationController.ps1 -serverId "${{ matrix.environment }}"
+          $PSScriptRoot\scripts\operationController.ps1 -serverId "${{ matrix.environment }}"
         shell: pwsh
 
 
