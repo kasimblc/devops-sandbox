@@ -59,6 +59,10 @@ jobs:
         run: |
           Write-Output "Download Artifact"
 
+      - name: Debug - List Files
+        run: Get-ChildItem -Recurse | Select-String "operationController.ps1"
+        shell: pwsh
+
   create-matrix:
     needs: checkout-download
     name: "Create Matrix"
@@ -112,6 +116,9 @@ jobs:
         environment: ${{ fromJson(needs.create-matrix.outputs.matrix_env) }}  # Önceki job'un çıktısındaki environment değerlerini alır // Gets environment values from the output of the previous job.
     steps:
       - name: ${{ matrix.environment }} - ${{ inputs.ACTION }}  # İşlem yapılacak hedef ortam ve işlem türü // Target environment and action type
-        shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
         run: |
+          Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
           .\scripts\operationController.ps1 -serverId "${{ matrix.environment }}"
+        shell: pwsh
+
+
