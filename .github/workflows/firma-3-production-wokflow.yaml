@@ -18,7 +18,7 @@ on:
           - deploy  # Dağıtım işlemi // Deployment action
           - rollback  # Geri alma işlemi // Rollback action
       TARGET_SERVERS:  # Dağıtım yapılacak sunucular // Servers to deploy to
-        description: "Sunucu Listesi: İsteğe bağlı olarak değiştirilebilir; belirtilen sunucular çalıştırılır ya da varsayılan liste kullanılır." # Dağıtım yapılacak sunucular
+        description: "Sunucu Listesi: İsteğe bağlı olarak değiştirilebilir." # Dağıtım yapılacak sunucular
         required: true
         default: '["firma-3-production-1","firma-3-production-2","firma-3-batch-1"]'
         type: string
@@ -31,7 +31,7 @@ on:
         description: "Argümanları tanımladığımız konfig dosyasının ADI." # Argümanları tanımladığımız konfig dosyasının adını vereceğiz.
         required: true
         default: "arguments.ps1"
-        type: string
+        type: string   
 
 # Base İş Akışını Çağırma
 jobs:

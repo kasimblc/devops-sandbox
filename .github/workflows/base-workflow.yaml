@@ -41,7 +41,7 @@ on:
 jobs:
   checkout-download:
     name: "Checkout && Download"
-    runs-on: self-hosted
+    runs-on: windows-latest
     steps:
       - name: Checkout Deploy Repository
         uses: actions/checkout@v4
