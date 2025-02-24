@@ -116,9 +116,10 @@ jobs:
         environment: ${{ fromJson(needs.create-matrix.outputs.matrix_env) }}  # Önceki job'un çıktısındaki environment değerlerini alır // Gets environment values from the output of the previous job.
     steps:
       - name: ${{ matrix.environment }} - ${{ inputs.ACTION }}  # İşlem yapılacak hedef ortam ve işlem türü // Target environment and action type
-        run: |
-          Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-          $PSScriptRoot\scripts\operationController.ps1 -serverId "${{ matrix.environment }}"
         shell: pwsh
+        run: |
+          Write-Output "Geçerli Çalışma Dizini:"
+          Get-Location  # Windows için
+          $PWD          # Linux/macOS için alternatif
 
 
