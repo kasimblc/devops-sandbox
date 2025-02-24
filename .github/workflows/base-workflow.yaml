@@ -114,4 +114,4 @@ jobs:
       - name: ${{ matrix.environment }} - ${{ inputs.ACTION }}  # İşlem yapılacak hedef ortam ve işlem türü // Target environment and action type
         shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
         run: |
-          .\scripts\operationController.ps1 -serverId "matrix.environment"
+          .\scripts\operationController.ps1 -serverId "${{ matrix.environment }}"
