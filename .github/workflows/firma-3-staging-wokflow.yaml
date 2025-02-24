@@ -23,16 +23,16 @@ on:
         required: true
         default: '["firma-3-staging-1","firma-3-staging-2"]'
         type: string
-      DOWNLOAD_ARTIFACT:
-        description: "Artifact indirilsin mi? Gerek yoksa işlem hızlanır." # Artifact indirilsin mi
-        required: true
-        type: boolean
-        default: false
       CONFIG_FILE_NAME:
         description: "Argümanları tanımladığımız konfig dosyasının ADI." # Argümanları tanımladığımız konfig dosyasının adını vereceğiz.
         required: true
         default: "arguments.ps1"
-        type: string   
+        type: string     
+      DOWNLOAD_ARTIFACT:
+        description: "Artifact indirilsin mi? Gerek yoksa işlem hızlanır." # Artifact indirilsin mi
+        required: true
+        type: boolean
+        default: false   
 
 # Base İş Akışını Çağırma
 jobs:
