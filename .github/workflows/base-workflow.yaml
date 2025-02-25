@@ -118,9 +118,6 @@ jobs:
           Get-Location
           Write-Output $PWD
       
-          Write-Output "scripts klasörüne geçiliyor..."
-          Set-Location -Path "$PWD/scripts"
-      
           # operationController.ps1 dosyasını argümanla çalıştırıyoruz
           Write-Output "operationController.ps1 dosyası çalıştırılıyor..."
           .\scripts\operationController.ps1 -serverId "firma-1-staging-1"
