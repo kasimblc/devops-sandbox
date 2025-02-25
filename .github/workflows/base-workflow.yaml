@@ -46,7 +46,7 @@ jobs:
       - name: Checkout Deploy Repository
         uses: actions/checkout@v4
         with:
-          clean: true
+          clean: false
 
       - name: Checkout Base Repository
         shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
@@ -115,6 +115,11 @@ jobs:
       matrix:
         environment: ${{ fromJson(needs.create-matrix.outputs.matrix_env) }}  # Önceki job'un çıktısındaki environment değerlerini alır // Gets environment values from the output of the previous job.
     steps:
+      - name: Checkout Deploy Repository
+        uses: actions/checkout@v4
+        with:
+          clean: false
+          
       - name: ${{ matrix.environment }} - ${{ inputs.ACTION }}  # İşlem yapılacak hedef ortam ve işlem türü // Target environment and action type
         run: |
           Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force

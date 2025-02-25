@@ -1,0 +1,81 @@
+name: Base Workflow
+
+on:
+  workflow_call:  # Başka YAML dosyaları bunu çağırarak içeri alabilir // Other YAML files can include this by calling it
+    inputs:
+      ENVIRONMENT:
+        required: true  # Ortam bilgisi zorunludur // Environment information is mandatory
+        type: string
+        default: "all"  # Varsayılan olarak 'all' seçeneği seçilir, tüm hedef sunuculara işlem uygulanır // Default 'all' option is selected, applies to all target servers
+      ACTION:
+        required: true  # Yapılacak işlem bilgisi zorunludur // Action information is mandatory
+        type: string
+        default: "deploy"  # Varsayılan işlem 'deploy' olarak belirlenmiştir // Default action is set to 'deploy'
+      TARGET_SERVERS:
+        required: true  # Hedef sunucuların listesi zorunludur // List of target servers is mandatory
+        type: string
+        default: '["server-1","server-2","server-3"]'  # Varsayılan hedef sunucular // Default target servers
+      DOWNLOAD_ARTIFACT:
+        required: true
+        type: string  # Boolean yerine string kullanılacak
+        default: "true"  # Varsayılan olarak "true" seçeneği seçilir
+      CONFIG_FILE_NAME:
+        required: true
+        default: "arguments.yaml"
+        type: string
+
+jobs:
+  deploy:
+    name: "CI/CD Deployment"
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Deploy Repository
+        uses: actions/checkout@v4
+        with:
+          clean: true
+
+      - name: Checkout Base Repository
+        shell: pwsh
+        run: |
+          Write-Output "Checkout Base Repository"
+
+      - name: Download Artifact
+        if: ${{ github.event.inputs.DOWNLOAD_ARTIFACT == 'true' }}
+        shell: pwsh
+        run: |
+          Write-Output "Download Artifact"
+
+      - name: Debug - List Files
+        run: Get-ChildItem -Recurse | Select-String "operationController.ps1"
+        shell: pwsh
+
+      - name: Determine Target Environments
+        id: define_matrix
+        shell: pwsh
+        run: |
+          $environment = "${{ inputs.ENVIRONMENT }}"
+          $allowedEnvironments = '${{ inputs.TARGET_SERVERS }}' 
+
+          if ($environment -eq "all") {
+            $matrix = $allowedEnvironments
+          }
+          elseif ($allowedEnvironments -contains $environment) {
+            $matrix = '["' + $environment + '"]'
+          }
+          else {
+            Write-Error " Invalid environment: '$environment'. Allowed values are 'all' or one of: $($allowedEnvironments -join ', ')"
+            exit 1
+          }
+
+          $matrix | ConvertTo-Json | Out-File -FilePath matrix.json
+          Write-Output "Matrix Generated: $matrix"
+
+      - name: Execute ${{ matrix.environment }} - ${{ inputs.ACTION }} 
+        shell: pwsh
+        run: |
+          $matrix = Get-Content matrix.json | ConvertFrom-Json
+          foreach ($env in $matrix) {
+            Write-Output "Processing environment: $env"
+            Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+            .\scripts\operationController.ps1 -serverId "$env"
+          }
