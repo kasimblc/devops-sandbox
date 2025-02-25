@@ -41,7 +41,7 @@ on:
 jobs:
   checkout-download:
     name: "Checkout && Download"
-    runs-on: self-hosted
+    runs-on: windows-latest
     steps:
       - name: Checkout Deploy Repository
         uses: actions/checkout@v4
@@ -59,14 +59,10 @@ jobs:
         run: |
           Write-Output "Download Artifact"
 
-      - name: Debug - List Files
-        run: Get-ChildItem -Recurse | Select-String "operationController.ps1"
-        shell: pwsh
-
   create-matrix:
     needs: checkout-download
     name: "Create Matrix"
-    runs-on: self-hosted  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
+    runs-on: windows-latest  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
     outputs:
       # Burada oluşturulan matrix_env çıktısı, bir sonraki job (execute-matrix) tarafından kullanılacaktır.
       # The matrix_env output created here will be used by the next job (execute-matrix).
@@ -108,7 +104,7 @@ jobs:
   execute-matrix:
     needs: create-matrix  # Bu job'un başlaması için create-matrix'in tamamlanması gerekiyor // This job needs create-matrix to complete first.
     name: "Matrix"
-    runs-on: self-hosted  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
+    runs-on: windows-latest  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır. // Prevents parallel execution, ensures tasks run sequentially.
       # (Öncelikli olarak sıralı çalıştırma gerektiren işlemler için) // (Especially for tasks that need to be run sequentially)
@@ -125,10 +121,6 @@ jobs:
           Write-Output "scripts klasörüne geçiliyor..."
           Set-Location -Path "$PWD/scripts"
       
-          Write-Output "scripts dizinindeki dosyalar:"
-          Get-ChildItem -Path "$PWD"
-      
           # operationController.ps1 dosyasını argümanla çalıştırıyoruz
           Write-Output "operationController.ps1 dosyası çalıştırılıyor..."
-          .\operationController.ps1 -serverId "firma-1-staging-1"
-
+          .\scripts\operationController.ps1 -serverId "firma-1-staging-1"
