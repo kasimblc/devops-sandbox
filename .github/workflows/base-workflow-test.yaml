@@ -1,4 +1,4 @@
-name: Base Workflow
+name: Base Workflow test
 
 on:
   workflow_call:  # Başka YAML dosyaları bunu çağırarak içeri alabilir // Other YAML files can include this by calling it

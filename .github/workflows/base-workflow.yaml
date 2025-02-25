@@ -41,7 +41,7 @@ on:
 jobs:
   checkout-download:
     name: "Checkout && Download"
-    runs-on: windows-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout Deploy Repository
         uses: actions/checkout@v4
@@ -66,7 +66,7 @@ jobs:
   create-matrix:
     needs: checkout-download
     name: "Create Matrix"
-    runs-on: windows-latest  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
+    runs-on: self-hosted  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
     outputs:
       # Burada oluşturulan matrix_env çıktısı, bir sonraki job (execute-matrix) tarafından kullanılacaktır.
       # The matrix_env output created here will be used by the next job (execute-matrix).
@@ -108,18 +108,13 @@ jobs:
   execute-matrix:
     needs: create-matrix  # Bu job'un başlaması için create-matrix'in tamamlanması gerekiyor // This job needs create-matrix to complete first.
     name: "Matrix"
-    runs-on: windows-latest  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
+    runs-on: self-hosted  # İş akışı Windows işletim sistemi üzerinde çalışacak // Workflow will run on Windows operating system
     strategy:
       max-parallel: 1  # Paralel çalışmayı önler, işlemleri sırayla çalıştırır. // Prevents parallel execution, ensures tasks run sequentially.
       # (Öncelikli olarak sıralı çalıştırma gerektiren işlemler için) // (Especially for tasks that need to be run sequentially)
       matrix:
         environment: ${{ fromJson(needs.create-matrix.outputs.matrix_env) }}  # Önceki job'un çıktısındaki environment değerlerini alır // Gets environment values from the output of the previous job.
     steps:
-      - name: Checkout Deploy Repository
-        uses: actions/checkout@v4
-        with:
-          clean: false
-          
       - name: ${{ matrix.environment }} - ${{ inputs.ACTION }}  # İşlem yapılacak hedef ortam ve işlem türü // Target environment and action type
         shell: pwsh
         run: |
