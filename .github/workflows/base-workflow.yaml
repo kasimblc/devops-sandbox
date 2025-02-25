@@ -46,7 +46,7 @@ jobs:
       - name: Checkout Deploy Repository
         uses: actions/checkout@v4
         with:
-          clean: faLse
+          clean: false
 
       - name: Checkout Base Repository
         shell: pwsh  # PowerShell kullanılarak komutlar çalıştırılır // Commands will be executed using PowerShell
