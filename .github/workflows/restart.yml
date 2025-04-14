@@ -1,0 +1,17 @@
+name: Restart Ubuntu Service
+
+on:
+  workflow_dispatch:
+
+jobs:
+  restart-service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restart remote service via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 172.28.109.169       # $linuxServer
+          username: kasim           # $linuxUser
+          password: kasim           # $linuxPassword
+          # port: 22                # default: 22, değişiklik yok
+          script: sudo systemctl restart cron  # $serviceName
