@@ -2,25 +2,33 @@ name: Delete Closed PR Branches
 
 on:
   schedule:
-    - cron: '0 3 * * 1' # Pazartesi saat 03:00 (UTC)
-  workflow_dispatch: # Elle tetikleme için
+    - cron: '0 3 * * 1' # Pazartesi 03:00 UTC
+  workflow_dispatch:
 
 jobs:
   delete-closed-pr-branches:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - name: Install GitHub CLI & jq
+        run: |
+          sudo apt update
+          sudo apt install -y gh jq
 
       - name: Delete closed PR branches
         env:
-          GITHUB_TOKEN: ${{ secrets.ALL}}
+          GH_TOKEN: ${{ secrets.ALL }}  # Burada GITHUB_TOKEN değil, GH_TOKEN kullanıyoruz
         run: |
+          echo "🔐 Auth status:"
+          gh auth status || echo "Auth not established"
+
           gh pr list --state closed --json headRefName \
           | jq -r '.[].headRefName' \
           | while read branch; do
               if [ "$branch" != "main" ] && [ "$branch" != "master" ]; then
-                echo "Deleting branch: $branch"
-                gh api -X DELETE repos/${{ github.repository }}/git/refs/heads/$branch
+                echo "🗑️ Deleting branch: $branch"
+                gh api \
+                  -X DELETE \
+                  -H "Authorization: token $GH_TOKEN" \
+                  /repos/${{ github.repository }}/git/refs/heads/$branch
               fi
             done
