@@ -1,0 +1,26 @@
+name: Delete Closed PR Branches
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Pazartesi saat 03:00 (UTC)
+  workflow_dispatch: # Elle tetikleme için
+
+jobs:
+  delete-closed-pr-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Delete closed PR branches
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr list --state closed --json headRefName \
+          | jq -r '.[].headRefName' \
+          | while read branch; do
+              if [ "$branch" != "main" ] && [ "$branch" != "master" ]; then
+                echo "Deleting branch: $branch"
+                gh api -X DELETE repos/${{ github.repository }}/git/refs/heads/$branch
+              fi
+            done
