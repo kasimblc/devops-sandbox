@@ -2,7 +2,7 @@ name: Delete Closed PR Branches
 
 on:
   schedule:
-    - cron: '0 3 * * 1' # Pazartesi 03:00 UTC
+    - cron: '0 3 * * 1' # Pazartesi saat 03:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -16,12 +16,12 @@ jobs:
 
       - name: Delete closed PR branches
         env:
-          GH_TOKEN: ${{ secrets.ALL }}  # Burada GITHUB_TOKEN değil, GH_TOKEN kullanıyoruz
+          GH_TOKEN: ${{ secrets.ALL }}
         run: |
           echo "🔐 Auth status:"
           gh auth status || echo "Auth not established"
 
-          gh pr list --state closed --json headRefName \
+          gh pr list --repo ${{ github.repository }} --state closed --json headRefName \
           | jq -r '.[].headRefName' \
           | while read branch; do
               if [ "$branch" != "main" ] && [ "$branch" != "master" ]; then
