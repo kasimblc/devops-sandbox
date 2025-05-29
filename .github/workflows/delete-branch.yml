@@ -25,10 +25,15 @@ jobs:
           | jq -r '.[].headRefName' \
           | while read branch; do
               if [ "$branch" != "main" ] && [ "$branch" != "master" ]; then
-                echo "🗑️ Deleting branch: $branch"
-                gh api \
-                  -X DELETE \
-                  -H "Authorization: token $GH_TOKEN" \
-                  /repos/${{ github.repository }}/git/refs/heads/$branch
+                echo "🔍 Checking if branch '$branch' exists..."
+                if gh api repos/${{ github.repository }}/git/refs/heads/$branch > /dev/null 2>&1; then
+                  echo "🗑️ Deleting branch: $branch"
+                  gh api \
+                    -X DELETE \
+                    -H "Authorization: token $GH_TOKEN" \
+                    /repos/${{ github.repository }}/git/refs/heads/$branch
+                else
+                  echo "⚠️ Branch '$branch' does not exist. Skipping deletion."
+                fi
               fi
             done
