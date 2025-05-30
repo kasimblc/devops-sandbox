@@ -1,76 +1,89 @@
-name: Delete Closed PR Branches (Auto Repo List)
+name: Delete Closed PR Branches
 
 on:
   schedule:
-    - cron: '0 3 * * 1' # Her Pazartesi 03:00 UTC
+    - cron: '0 3 * * 1'  # Pazartesi 03:00 UTC
   workflow_dispatch:
+    inputs:
+      BRANCH_PATTERN:
+        description: 'Branch name filter (optional)'
+        required: false
+        default: ""
+      PR_PATTERN:
+        description: 'PR title/description filter (optional)'
+        required: false
+        default: ""
 
 jobs:
   delete-closed-pr-branches:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.ALL }}
     steps:
       - name: Install GitHub CLI & jq
         run: |
           sudo apt update
           sudo apt install -y gh jq
 
-      - name: Delete closed PR branches from all kasimblc repositories
+      - name: Delete closed PR branches across repos
         env:
-          GH_TOKEN: ${{ secrets.ALL }}
-          BRANCH_PATTERN: "silme"     # örnek: "CU-"
-          PR_PATTERN: "silme"         # örnek: "ClickUp"
+          BRANCH_PATTERN: ${{ github.event.inputs.BRANCH_PATTERN }}
+          PR_PATTERN: ${{ github.event.inputs.PR_PATTERN }}
         run: |
-          echo "🔐 Auth status:"
-          gh auth status || echo "Auth not established"
+          set -e
 
-          echo "📥 Fetching all repositories for user kasimblc..."
-          repos=$(gh repo list kasimblc --limit 1000 --json nameWithOwner -q '.[].nameWithOwner')
-
+          # 🧱 Protected branch names that should never be deleted
           protected_branches=("main" "master" "develop" "release")
 
-          for repo in $repos; do
-            echo "📦 Processing repository: $repo"
+          # 🚫 Repos to exclude from processing
+          excluded_repos=("kasimblc/private-repo1" "kasimblc/test-repo2")
 
-            gh pr list --repo "$repo" --state closed --json title,body,headRefName \
-            | jq -c '.[]' \
-            | while read pr; do
+          echo "📦 Fetching all repositories for user 'kasimblc'..."
+          gh repo list kasimblc --limit 1000 --json nameWithOwner -q '.[].nameWithOwner' \
+          | while read repo; do
+              if printf '%s\n' "${excluded_repos[@]}" | grep -qx "$repo"; then
+                echo "⏭️ Skipping excluded repo: $repo"
+                continue
+              fi
+
+              echo "🔍 Processing repo: $repo"
+              pr_json=$(gh pr list --repo "$repo" --state closed --json title,body,headRefName 2>/dev/null || echo "")
+              
+              if [ -z "$pr_json" ]; then
+                echo "⚠️ Skipping $repo due to empty or invalid PR list"
+                continue
+              fi
+
+              echo "$pr_json" | jq -c '.[]?' | while read pr; do
                 title=$(echo "$pr" | jq -r '.title')
                 body=$(echo "$pr" | jq -r '.body')
                 branch=$(echo "$pr" | jq -r '.headRefName')
 
-                # Ana branch'leri koru
-                skip=false
-                for protected in "${protected_branches[@]}"; do
-                  if [[ "$branch" == "$protected" ]]; then
-                    echo "⚠️ '$branch' is a protected branch. Skipping."
-                    skip=true
-                    break
-                  fi
-                done
-                [ "$skip" = true ] && continue
+                # Skip if branch is protected
+                if printf '%s\n' "${protected_branches[@]}" | grep -qx "$branch"; then
+                  echo "🔒 Protected branch '$branch', skipping"
+                  continue
+                fi
 
-                # Branch filtre kontrolü
+                # Filter by branch name if pattern is set
                 if [ -n "$BRANCH_PATTERN" ] && [[ "$branch" != *"$BRANCH_PATTERN"* ]]; then
-                  echo "ℹ️ Branch '$branch' does not match pattern '$BRANCH_PATTERN'. Skipping."
                   continue
                 fi
 
-                # PR filtre kontrolü
-                if [ -n "$PR_PATTERN" ] && [[ "$title" != *"$PR_PATTERN"* && "$body" != *"$PR_PATTERN"* ]]; then
-                  echo "ℹ️ PR '$title' does not match PR pattern '$PR_PATTERN'. Skipping."
-                  continue
+                # Filter by PR content if pattern is set
+                if [ -n "$PR_PATTERN" ]; then
+                  combined="$title $body"
+                  if [[ "$combined" != *"$PR_PATTERN"* ]]; then
+                    continue
+                  fi
                 fi
 
-                # Silme işlemi
-                echo "🔍 Checking if branch '$branch' exists in $repo..."
-                if gh api repos/$repo/git/refs/heads/$branch > /dev/null 2>&1; then
-                  echo "🗑️ Deleting branch '$branch' from $repo"
-                  gh api \
-                    -X DELETE \
-                    -H "Authorization: token $GH_TOKEN" \
-                    /repos/$repo/git/refs/heads/$branch
+                # Check branch existence
+                if gh api repos/"$repo"/git/refs/heads/"$branch" > /dev/null 2>&1; then
+                  echo "🗑️ Deleting branch '$branch' in repo '$repo'"
+                  gh api -X DELETE /repos/"$repo"/git/refs/heads/"$branch"
                 else
-                  echo "⚠️ Branch '$branch' does not exist in $repo. Skipping."
+                  echo "⚠️ Branch '$branch' not found in repo '$repo'"
                 fi
               done
           done
