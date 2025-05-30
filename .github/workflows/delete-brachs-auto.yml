@@ -1,4 +1,4 @@
-name: Delete Closed PR Branches
+name: Delete Closed PR Branches Auto
 
 on:
   schedule:
