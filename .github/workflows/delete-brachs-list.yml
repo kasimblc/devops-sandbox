@@ -1,4 +1,4 @@
-name: Delete Closed PR Branches From Multiple Repos
+name: Delete Closed PR Branches (Auto Repo List)
 
 on:
   schedule:
@@ -14,32 +14,31 @@ jobs:
           sudo apt update
           sudo apt install -y gh jq
 
-      - name: Delete closed PR branches from multiple repositories
+      - name: Delete closed PR branches from all kasimblc repositories
         env:
           GH_TOKEN: ${{ secrets.ALL }}
+          BRANCH_PATTERN: ""     # örnek: "CU-"
+          PR_PATTERN: ""         # örnek: "ClickUp"
         run: |
           echo "🔐 Auth status:"
           gh auth status || echo "Auth not established"
 
-          # 👇 İşlem yapılacak repository listesi (owner/repo formatında)
-          repos=(
-            kasimblc/test1
-            kasimblc/test2
-            kasimblc/test3
-          )
+          echo "📥 Fetching all repositories for user kasimblc..."
+          repos=$(gh repo list kasimblc --limit 1000 --json nameWithOwner -q '.[].nameWithOwner')
 
-          # 🛡️ Korunacak ana branch isimleri
-          protected_branches=("main" "master" "staging" "release")
+          protected_branches=("main" "master" "develop" "release")
 
-          for repo in "${repos[@]}"; do
+          for repo in $repos; do
             echo "📦 Processing repository: $repo"
 
-            # Kapalı PR'lerden gelen branch isimlerini çek
-            gh pr list --repo "$repo" --state closed --json headRefName \
-            | jq -r '.[].headRefName' \
-            | while read branch; do
+            gh pr list --repo "$repo" --state closed --json title,body,headRefName \
+            | jq -c '.[]' \
+            | while read pr; do
+                title=$(echo "$pr" | jq -r '.title')
+                body=$(echo "$pr" | jq -r '.body')
+                branch=$(echo "$pr" | jq -r '.headRefName')
 
-                # Ana branch'lerden biri mi? Kontrol et
+                # Ana branch'leri koru
                 skip=false
                 for protected in "${protected_branches[@]}"; do
                   if [[ "$branch" == "$protected" ]]; then
@@ -48,18 +47,30 @@ jobs:
                     break
                   fi
                 done
+                [ "$skip" = true ] && continue
 
-                if [ "$skip" = false ]; then
-                  echo "🔍 Checking if branch '$branch' exists in $repo..."
-                  if gh api repos/$repo/git/refs/heads/$branch > /dev/null 2>&1; then
-                    echo "🗑️ Deleting branch '$branch' from $repo"
-                    gh api \
-                      -X DELETE \
-                      -H "Authorization: token $GH_TOKEN" \
-                      /repos/$repo/git/refs/heads/$branch
-                  else
-                    echo "⚠️ Branch '$branch' does not exist in $repo. Skipping."
-                  fi
+                # Branch filtre kontrolü
+                if [ -n "$BRANCH_PATTERN" ] && [[ "$branch" != *"$BRANCH_PATTERN"* ]]; then
+                  echo "ℹ️ Branch '$branch' does not match pattern '$BRANCH_PATTERN'. Skipping."
+                  continue
+                fi
+
+                # PR filtre kontrolü
+                if [ -n "$PR_PATTERN" ] && [[ "$title" != *"$PR_PATTERN"* && "$body" != *"$PR_PATTERN"* ]]; then
+                  echo "ℹ️ PR '$title' does not match PR pattern '$PR_PATTERN'. Skipping."
+                  continue
+                fi
+
+                # Silme işlemi
+                echo "🔍 Checking if branch '$branch' exists in $repo..."
+                if gh api repos/$repo/git/refs/heads/$branch > /dev/null 2>&1; then
+                  echo "🗑️ Deleting branch '$branch' from $repo"
+                  gh api \
+                    -X DELETE \
+                    -H "Authorization: token $GH_TOKEN" \
+                    /repos/$repo/git/refs/heads/$branch
+                else
+                  echo "⚠️ Branch '$branch' does not exist in $repo. Skipping."
                 fi
               done
           done
