@@ -17,8 +17,8 @@ jobs:
       - name: Delete closed PR branches from all kasimblc repositories
         env:
           GH_TOKEN: ${{ secrets.ALL }}
-          BRANCH_PATTERN: ""     # örnek: "CU-"
-          PR_PATTERN: ""         # örnek: "ClickUp"
+          BRANCH_PATTERN: "silme"     # örnek: "CU-"
+          PR_PATTERN: "silme"         # örnek: "ClickUp"
         run: |
           echo "🔐 Auth status:"
           gh auth status || echo "Auth not established"
