@@ -48,16 +48,19 @@ jobs:
 
               echo "🔍 Processing repo: $repo"
               pr_json=$(gh pr list --repo "$repo" --state closed --json title,body,headRefName 2>/dev/null || echo "")
-              
-              if [ -z "$pr_json" ]; then
-                echo "⚠️ Skipping $repo due to empty or invalid PR list"
+
+              # jq çıktısını güvenli almak için
+              pr_lines=$(echo "$pr_json" | jq -c '.[]?' 2>/dev/null || true)
+
+              if [ -z "$pr_lines" ]; then
+                echo "⚠️ jq parsing failed or no PRs for $repo, skipping."
                 continue
               fi
 
-              echo "$pr_json" | jq -c '.[]?' | while read pr; do
-                title=$(echo "$pr" | jq -r '.title')
-                body=$(echo "$pr" | jq -r '.body')
-                branch=$(echo "$pr" | jq -r '.headRefName')
+              echo "$pr_lines" | while read pr; do
+                title=$(echo "$pr" | jq -r '.title' <<< "$pr")
+                body=$(echo "$pr" | jq -r '.body' <<< "$pr")
+                branch=$(echo "$pr" | jq -r '.headRefName' <<< "$pr")
 
                 # Skip if branch is protected
                 if printf '%s\n' "${protected_branches[@]}" | grep -qx "$branch"; then
