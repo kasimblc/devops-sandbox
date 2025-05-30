@@ -1,0 +1,94 @@
+name: Delete Closed PR Branches List
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'  # Pazartesi 03:00 UTC
+  workflow_dispatch:
+    inputs:
+      BRANCH_PATTERN:
+        description: 'Branch name filter (optional)'
+        required: false
+        default: ""
+      PR_PATTERN:
+        description: 'PR title/description filter (optional)'
+        required: false
+        default: ""
+
+jobs:
+  delete-closed-pr-branches:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.ALL }}
+    steps:
+      - name: Install GitHub CLI & jq
+        run: |
+          sudo apt update
+          sudo apt install -y gh jq
+
+      - name: Delete closed PR branches across selected repos
+        env:
+          BRANCH_PATTERN: ${{ github.event.inputs.BRANCH_PATTERN }}
+          PR_PATTERN: ${{ github.event.inputs.PR_PATTERN }}
+        run: |
+          set -e
+
+          # 🔒 Never delete these branches
+          protected_branches=("main" "master" "develop" "release")
+
+          # 🚫 Repos to exclude (even if listed below)
+          excluded_repos=("kasimblc/private-repo1" "kasimblc/test-repo2")
+
+          # ✅ List of repos to process (manually defined)
+          repos=(
+            kasimblc/repo1
+            kasimblc/repo2
+            kasimblc/repo3
+          )
+
+          for repo in "${repos[@]}"; do
+            if printf '%s\n' "${excluded_repos[@]}" | grep -qx "$repo"; then
+              echo "⏭️ Skipping excluded repo: $repo"
+              continue
+            fi
+
+            echo "🔍 Processing repo: $repo"
+            pr_json=$(gh pr list --repo "$repo" --state closed --json title,body,headRefName 2>/dev/null || echo "")
+            
+            if [ -z "$pr_json" ]; then
+              echo "⚠️ Skipping $repo due to empty or invalid PR list"
+              continue
+            fi
+
+            echo "$pr_json" | jq -c '.[]?' | while read pr; do
+              title=$(echo "$pr" | jq -r '.title')
+              body=$(echo "$pr" | jq -r '.body')
+              branch=$(echo "$pr" | jq -r '.headRefName')
+
+              # Skip if branch is protected
+              if printf '%s\n' "${protected_branches[@]}" | grep -qx "$branch"; then
+                echo "🔒 Protected branch '$branch', skipping"
+                continue
+              fi
+
+              # Filter by branch name if pattern is set
+              if [ -n "$BRANCH_PATTERN" ] && [[ "$branch" != *"$BRANCH_PATTERN"* ]]; then
+                continue
+              fi
+
+              # Filter by PR content if pattern is set
+              if [ -n "$PR_PATTERN" ]; then
+                combined="$title $body"
+                if [[ "$combined" != *"$PR_PATTERN"* ]]; then
+                  continue
+                fi
+              fi
+
+              # Check branch existence before deletion
+              if gh api repos/"$repo"/git/refs/heads/"$branch" > /dev/null 2>&1; then
+                echo "🗑️ Deleting branch '$branch' in repo '$repo'"
+                gh api -X DELETE /repos/"$repo"/git/refs/heads/"$branch"
+              else
+                echo "⚠️ Branch '$branch' not found in repo '$repo'"
+              fi
+            done
+          done
