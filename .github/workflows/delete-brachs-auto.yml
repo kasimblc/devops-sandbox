@@ -1,12 +1,12 @@
 name: Delete Closed PR Branches Auto
 
 on:
-  schedule:
-    - cron: '0 3 * * 1'  # Pazartesi 03:00 UTC
+ # schedule:
+ #   - cron: '0 3 * * 1'  # Pazartesi 03:00 UTC
   workflow_dispatch:
     inputs:
       BRANCH_PATTERN:
-        description: 'Branch name filter (optional)'
+        description: 'Branch name filter (optional)'More actions
         required: false
         default: ""
       PR_PATTERN:
@@ -36,7 +36,7 @@ jobs:
           protected_branches=("main" "master" "develop" "release")
 
           # 🚫 Repos to exclude from processing
-          excluded_repos=("kasimblc/docker-haproxy" "kasimblc/test-repo2")
+          excluded_repos=("kasimblc/docker-haproxy")
 
           echo "📦 Fetching all repositories for user 'kasimblc'..."
           gh repo list kasimblc --limit 1000 --json nameWithOwner -q '.[].nameWithOwner' \
@@ -48,19 +48,19 @@ jobs:
 
               echo "🔍 Processing repo: $repo"
               pr_json=$(gh pr list --repo "$repo" --state closed --json title,body,headRefName 2>/dev/null || echo "")
+              
+              if [ -z "$pr_json" ]; then
+                echo "⚠️ Skipping $repo due to empty or invalid PR list"
 
-              # jq çıktısını güvenli almak için
-              pr_lines=$(echo "$pr_json" | jq -c '.[]?' 2>/dev/null || true)
 
-              if [ -z "$pr_lines" ]; then
-                echo "⚠️ jq parsing failed or no PRs for $repo, skipping."
+
                 continue
               fi
 
-              echo "$pr_lines" | while read pr; do
-                title=$(echo "$pr" | jq -r '.title' <<< "$pr")
-                body=$(echo "$pr" | jq -r '.body' <<< "$pr")
-                branch=$(echo "$pr" | jq -r '.headRefName' <<< "$pr")
+              echo "$pr_json" | jq -c '.[]?' | while read pr; do
+                title=$(echo "$pr" | jq -r '.title')
+                body=$(echo "$pr" | jq -r '.body')
+                branch=$(echo "$pr" | jq -r '.headRefName')
 
                 # Skip if branch is protected
                 if printf '%s\n' "${protected_branches[@]}" | grep -qx "$branch"; then
