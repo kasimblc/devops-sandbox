@@ -36,7 +36,7 @@ jobs:
           protected_branches=("main" "master" "develop" "release")
 
           # 🚫 Repos to exclude from processing
-          excluded_repos=("kasimblc/private-repo1" "kasimblc/test-repo2")
+          excluded_repos=("kasimblc/docker-haproxy" "kasimblc/test-repo2")
 
           echo "📦 Fetching all repositories for user 'kasimblc'..."
           gh repo list kasimblc --limit 1000 --json nameWithOwner -q '.[].nameWithOwner' \
