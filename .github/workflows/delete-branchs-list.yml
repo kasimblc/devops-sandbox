@@ -40,9 +40,9 @@ jobs:
 
           # ✅ List of repos to process (manually defined)
           repos=(
-            kasimblc/repo1
-            kasimblc/repo2
-            kasimblc/repo3
+            kasimblc/test1
+            kasimblc/test2
+            kasimblc/test3
           )
 
           for repo in "${repos[@]}"; do
