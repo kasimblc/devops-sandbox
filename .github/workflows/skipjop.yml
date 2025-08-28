@@ -1,0 +1,116 @@
+name: Test For Skip Jop
+
+on:
+  workflow_dispatch:
+    inputs:
+      RUN_BATCH0:
+        description: "Batch0 çalıştırılsın mı?"
+        required: true
+        type: boolean
+        default: true
+      RUN_BATCH1:
+        description: "Batch1 çalıştırılsın mı?"
+        required: true
+        type: boolean
+        default: true
+      RUN_STATIC:
+        description: "Static çalıştırılsın mı?"
+        required: true
+        type: boolean
+        default: true
+      DEPLOY_TYPE:
+        description: "Static için deploy tipi seçin: 'full' = Tam deploy, 'only-css-js' = Sadece css + js"
+        required: true
+        default: "full"
+        type: choice
+        options:
+          - "full"
+          - "only-css-js"
+      RUN_BATCH2:
+        description: "Batch2 çalıştırılsın mı?"
+        required: true
+        type: boolean
+        default: true
+      RUN_PROD1:
+        description: "Prod1 çalıştırılsın mı?"
+        required: true
+        type: boolean
+        default: true
+      RUN_PROD2:
+        description: "Prod2 çalıştırılsın mı?"
+        required: true
+        type: boolean
+        default: true
+      RUN_PROD3:
+        description: "Prod3 çalıştırılsın mı?"
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Pull
+        run: echo "Deploy job çalıştı"
+
+  Batch0:
+    if: ${{ github.event.inputs.RUN_BATCH0 }}
+    needs: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Batch0
+        run: echo "Batch0 job çalıştı"
+
+  Batch1:
+    if: ${{ github.event.inputs.RUN_BATCH1 }}
+    needs: Batch0
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Batch1
+        run: echo "Batch1 job çalıştı"
+
+  Static:
+    if: ${{ github.event.inputs.RUN_STATIC }}
+    needs: Batch1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Static - Full
+        if: ${{ github.event.inputs.DEPLOY_TYPE == 'full' }}
+        run: echo "Static Full job çalıştı"
+
+      - name: Deploy Static - Only CSS & JS
+        if: ${{ github.event.inputs.DEPLOY_TYPE == 'only-css-js' }}
+        run: echo "Static Only CSS & JS job çalıştı"
+
+  Batch2:
+    if: ${{ github.event.inputs.RUN_BATCH2 }}
+    needs: Batch1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Batch2
+        run: echo "Batch2 job çalıştı"
+
+  Prod1:
+    if: ${{ github.event.inputs.RUN_PROD1 }}
+    needs: [Batch2, Static]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Prod1
+        run: echo "Prod1 job çalıştı"
+
+  Prod2:
+    if: ${{ github.event.inputs.RUN_PROD2 }}
+    needs: Prod1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Prod2
+        run: echo "Prod2 job çalıştı"
+
+  Prod3:
+    if: ${{ github.event.inputs.RUN_PROD3 }}
+    needs: Prod2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Prod3
+        run: echo "Prod3 job çalıştı"
