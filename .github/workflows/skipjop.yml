@@ -82,11 +82,11 @@ jobs:
     continue-on-error: true
     steps:
       - name: Deploy Static - Full
-        if: ${{ github.event.inputs.DEPLOY_TYPE == 'full' }}
+        if: ${{ github.event.inputs.DEPLOY_TYPE == 'full' || github.event.inputs.RUN_STATIC == 'true' }}
         run: echo "Static Full job çalıştı"
 
       - name: Deploy Static - Only CSS & JS
-        if: ${{ github.event.inputs.DEPLOY_TYPE == 'only-css-js' }}
+        if: ${{ github.event.inputs.DEPLOY_TYPE == 'only-css-js' || github.event.inputs.RUN_STATIC == 'true' }}
         run: echo "Static Only CSS & JS job çalıştı"
 
   Batch2:
