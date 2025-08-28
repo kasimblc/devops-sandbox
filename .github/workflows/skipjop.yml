@@ -56,25 +56,27 @@ jobs:
         run: echo "Deploy job çalıştı"
 
   Batch0:
-    if: ${{ github.event.inputs.RUN_BATCH0 == 'true' }}
+    if: ${{ always() }}
     needs: Deploy
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Deploy Batch0
+        if: ${{ github.event.inputs.RUN_BATCH0 == 'true' }}
         run: echo "Batch0 job çalıştı"
 
   Batch1:
-    if: ${{ github.event.inputs.RUN_BATCH1 == 'true' }}
+    if: ${{ always() }}
     needs: Batch0
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Deploy Batch1
+        if: ${{ github.event.inputs.RUN_BATCH1 == 'true' }}
         run: echo "Batch1 job çalıştı"
 
   Static:
-    if: ${{ github.event.inputs.RUN_STATIC == 'true' }}
+    if: ${{ always() }}
     needs: Batch1
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -88,37 +90,41 @@ jobs:
         run: echo "Static Only CSS & JS job çalıştı"
 
   Batch2:
-    if: ${{ github.event.inputs.RUN_BATCH2 == 'true' }}
+    if: ${{ always() }}
     needs: Static
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Deploy Batch2
+        if: ${{ github.event.inputs.RUN_BATCH2 == 'true' }}
         run: echo "Batch2 job çalıştı"
 
   Prod1:
-    if: ${{ github.event.inputs.RUN_PROD1 == 'true' }}
+    if: ${{ always() }}
     needs: Batch2
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Deploy Prod1
+        if: ${{ github.event.inputs.RUN_PROD1 == 'true' }}
         run: echo "Prod1 job çalıştı"
 
   Prod2:
-    if: ${{ github.event.inputs.RUN_PROD2 == 'true' }}
+    if: ${{ always() }}
     needs: Prod1
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Deploy Prod2
+        if: ${{ github.event.inputs.RUN_PROD2 == 'true' }}
         run: echo "Prod2 job çalıştı"
 
   Prod3:
-    if: ${{ github.event.inputs.RUN_PROD3 == 'true' }}
+    if: ${{ always() }}
     needs: Prod2
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - name: Test Prod3
+      - name: Deploy Prod3
+        if: ${{ github.event.inputs.RUN_PROD3 == 'true' }}
         run: echo "Prod3 job çalıştı"
