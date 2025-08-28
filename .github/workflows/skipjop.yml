@@ -50,7 +50,6 @@ on:
 jobs:
   Deploy:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Git Pull
         run: echo "Deploy job çalıştı"
@@ -59,7 +58,6 @@ jobs:
     if: ${{ always() }}
     needs: Deploy
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Deploy Batch0
         if: ${{ github.event.inputs.RUN_BATCH0 == 'true' }}
@@ -69,7 +67,6 @@ jobs:
     if: ${{ always() }}
     needs: Batch0
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Deploy Batch1
         if: ${{ github.event.inputs.RUN_BATCH1 == 'true' }}
@@ -79,7 +76,6 @@ jobs:
     if: ${{ always() }}
     needs: Batch1
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Deploy Static - Full
         if: ${{ github.event.inputs.DEPLOY_TYPE == 'full' && github.event.inputs.RUN_STATIC == 'true' }}
@@ -93,7 +89,6 @@ jobs:
     if: ${{ always() }}
     needs: Static
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Deploy Batch2
         if: ${{ github.event.inputs.RUN_BATCH2 == 'true' }}
@@ -103,7 +98,6 @@ jobs:
     if: ${{ always() }}
     needs: Batch2
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Deploy Prod1
         if: ${{ github.event.inputs.RUN_PROD1 == 'true' }}
@@ -113,7 +107,6 @@ jobs:
     if: ${{ always() }}
     needs: Prod1
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Deploy Prod2
         if: ${{ github.event.inputs.RUN_PROD2 == 'true' }}
@@ -123,7 +116,6 @@ jobs:
     if: ${{ always() }}
     needs: Prod2
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Deploy Prod3
         if: ${{ github.event.inputs.RUN_PROD3 == 'true' }}
