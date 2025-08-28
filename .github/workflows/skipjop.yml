@@ -1,4 +1,4 @@
-name: Test For Skip Jop
+name: Test For Skip Job
 
 on:
   workflow_dispatch:
@@ -55,7 +55,7 @@ jobs:
         run: echo "Deploy job çalıştı"
 
   Batch0:
-    if: ${{ github.event.inputs.RUN_BATCH0 }}
+    if: ${{ github.event.inputs.RUN_BATCH0 == 'true' }}
     needs: Deploy
     runs-on: ubuntu-latest
     steps:
@@ -63,7 +63,7 @@ jobs:
         run: echo "Batch0 job çalıştı"
 
   Batch1:
-    if: ${{ github.event.inputs.RUN_BATCH1 }}
+    if: ${{ github.event.inputs.RUN_BATCH1 == 'true' }}
     needs: Batch0
     runs-on: ubuntu-latest
     steps:
@@ -71,7 +71,7 @@ jobs:
         run: echo "Batch1 job çalıştı"
 
   Static:
-    if: ${{ github.event.inputs.RUN_STATIC }}
+    if: ${{ github.event.inputs.RUN_STATIC == 'true' }}
     needs: Batch1
     runs-on: ubuntu-latest
     steps:
@@ -84,7 +84,7 @@ jobs:
         run: echo "Static Only CSS & JS job çalıştı"
 
   Batch2:
-    if: ${{ github.event.inputs.RUN_BATCH2 }}
+    if: ${{ github.event.inputs.RUN_BATCH2 == 'true' }}
     needs: Static
     runs-on: ubuntu-latest
     steps:
@@ -92,7 +92,7 @@ jobs:
         run: echo "Batch2 job çalıştı"
 
   Prod1:
-    if: ${{ github.event.inputs.RUN_PROD1 }}
+    if: ${{ github.event.inputs.RUN_PROD1 == 'true' }}
     needs: Batch2
     runs-on: ubuntu-latest
     steps:
@@ -100,7 +100,7 @@ jobs:
         run: echo "Prod1 job çalıştı"
 
   Prod2:
-    if: ${{ github.event.inputs.RUN_PROD2 }}
+    if: ${{ github.event.inputs.RUN_PROD2 == 'true' }}
     needs: Prod1
     runs-on: ubuntu-latest
     steps:
@@ -108,7 +108,7 @@ jobs:
         run: echo "Prod2 job çalıştı"
 
   Prod3:
-    if: ${{ github.event.inputs.RUN_PROD3 }}
+    if: ${{ github.event.inputs.RUN_PROD3 == 'true' }}
     needs: Prod2
     runs-on: ubuntu-latest
     steps:
