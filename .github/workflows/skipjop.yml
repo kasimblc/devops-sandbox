@@ -85,7 +85,7 @@ jobs:
 
   Batch2:
     if: ${{ github.event.inputs.RUN_BATCH2 }}
-    needs: Batch1
+    needs: Static
     runs-on: ubuntu-latest
     steps:
       - name: Deploy Batch2
@@ -93,7 +93,7 @@ jobs:
 
   Prod1:
     if: ${{ github.event.inputs.RUN_PROD1 }}
-    needs: [Batch2, Static]
+    needs: Batch2
     runs-on: ubuntu-latest
     steps:
       - name: Deploy Prod1
