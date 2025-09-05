@@ -1,0 +1,23 @@
+name: Website Uptime Monitor
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+jobs:
+  uptime-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Monitor websites
+        uses: cd-roman/uptime-monitor@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          sites: |
+            https://example.com
+            https://api.example.com
+          timezone: "Europe/Istanbul"
