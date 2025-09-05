@@ -18,6 +18,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           sites: |
-            https://example.com
-            https://api.example.com
+            https://staging.uzaq.com.tr
           timezone: "Europe/Istanbul"
