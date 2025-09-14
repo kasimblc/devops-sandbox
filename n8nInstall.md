@@ -1,9 +1,4 @@
-````markdown
-# n8n Kurulum Rehberi (PostgreSQL + Node.js v22 + Basic Auth)
-
-Bu rehber, Docker ve Nginx kullanmadan n8n'i PostgreSQL ile çalışacak şekilde kurmak için hazırlanmıştır.  
-
----
+# N8N INSTALL
 
 ## 1. Node.js v22 Kurulumu
 
@@ -143,11 +138,11 @@ sudo ufw reload
 
 ---
 
+## Sonuç
+
+```bash
+# n8n Kurulum Rehberi (PostgreSQL + Node.js v22 + Basic Auth)
+
 Artık n8n, **PostgreSQL ile veritabanı kullanarak**, **Node.js v22** ile çalışıyor ve **Basic Auth** ile web arayüzü korunuyor.
-
-```
-
----
-
-İstersen ben bunu bir adım daha ileri götürüp **Traefik üzerinden dışarı açma ve HTTPS** ile erişim rehberi olarak da Markdown hazırlayabilirim. Bunu da yapayım mı?
+Bu rehber, Docker ve Nginx kullanmadan n8n'i PostgreSQL ile çalışacak şekilde kurmak için hazırlanmıştır.  
 ```
