@@ -1,0 +1,28 @@
+name: Password Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      password:
+        description: 'Enter the password (day+month)'
+        required: true
+        type: string
+
+jobs:
+  password-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get today’s date
+        id: date
+        run: |
+          TODAY=$(date +'%d%m')
+          echo "today=$TODAY" >> $GITHUB_OUTPUT
+
+      - name: Check password
+        run: |
+          if [ "${{ github.event.inputs.password }}" != "${{ steps.date.outputs.today }}" ]; then
+            echo "❌ Password incorrect!"
+            exit 1
+          else
+            echo "✅ Password correct!"
+          fi
