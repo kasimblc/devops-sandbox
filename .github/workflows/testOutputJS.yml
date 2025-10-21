@@ -16,8 +16,9 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            let resultContent = "";                 // test için boş içerik
-            core.setOutput("result", resultContent !== "" ? "true" : "false");
+            // Test için resultContent'i değiştir
+            let resultContent = "";  // boş -> false, "abc" -> true
+            return resultContent !== "" ? "true" : "false";
 
       - name: Debug result output
         run: |
